@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -263,6 +263,49 @@
       border-radius: 2px;
       background: rgba(201,117,108,0.1);
       color: var(--rose);
+    }
+
+    /* ── Favorite / Bookmark button ── */
+    .fav-btn {
+      position: absolute;
+      top: 0.85rem;
+      right: 0.85rem;
+      z-index: 3;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.92);
+      font-size: 1.05rem;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ccc;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      transition: color 0.2s, transform 0.2s, background 0.2s;
+    }
+
+    .fav-btn:hover {
+      transform: scale(1.1);
+      color: var(--gold);
+    }
+
+    .fav-btn.active {
+      color: var(--gold);
+      background: rgba(255,255,255,0.96);
+    }
+
+    .biz-card .distance-tag {
+      font-size: 0.72rem;
+      color: var(--rose);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .biz-card .distance-tag.hidden {
+      display: none;
     }
 
     .avatar-ring {
@@ -618,6 +661,67 @@
       height: 1px;
       background: #e8e3de;
     }
+    /* -- Browser API demo controls -- */
+    .voice-search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: var(--cream);
+      border: 1.5px solid rgba(125,46,46,0.18);
+      border-radius: 4px;
+      padding: 0.3rem;
+    }
+
+    .voice-search-wrap input {
+      width: min(230px, 48vw);
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 0.45rem 0.55rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      color: var(--charcoal);
+    }
+
+    .voice-btn {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 4px;
+      background: var(--burgundy);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .voice-btn:hover { background: var(--rose); transform: translateY(-1px); }
+    .voice-btn.listening { background: var(--forest); }
+
+    .api-toast {
+      position: fixed;
+      right: 1.25rem;
+      bottom: 1.25rem;
+      z-index: 10001;
+      max-width: min(340px, calc(100vw - 2rem));
+      background: var(--charcoal);
+      color: #fff;
+      padding: 0.85rem 1rem;
+      border-radius: 6px;
+      box-shadow: 0 18px 55px rgba(0,0,0,0.22);
+      font-size: 0.86rem;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .api-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .biz-card.voice-hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -723,7 +827,7 @@
           </div>
           <div class="w-px bg-gray-200"></div>
           <div class="hero-stat">
-            <div class="num">$2.1M</div>
+            <div class="num">2.1M</div>
             <div class="label">Grants Accessed</div>
           </div>
         </div>
@@ -884,7 +988,6 @@
     </div>
   </section>
 
-
   <!-- ══════════════════════════════════════════ -->
   <!--  BUSINESS DIRECTORY CARDS                  -->
   <!-- ══════════════════════════════════════════ -->
@@ -896,15 +999,34 @@
           <p class="section-eyebrow">Featured Businesses</p>
           <h2 class="section-title">Women-Led Ventures<br/>Making Waves</h2>
         </div>
-        <a href="#" class="btn-outline" style="white-space:nowrap;">View Full Directory →</a>
+        <div class="flex flex-wrap gap-3 items-center">
+          <button id="near-me-btn" onclick="findNearMeBusinesses()" class="btn-outline" style="white-space:nowrap;">📍 Founders Near Me</button>
+          <select id="city-fallback" class="hidden btn-outline" onchange="useFallbackCity()" style="white-space:nowrap;cursor:pointer;">
+            <option value="">Choose your city…</option>
+            <option value="12.9716,77.5946">Bengaluru</option>
+            <option value="19.0760,72.8777">Mumbai</option>
+            <option value="28.6139,77.2090">New Delhi</option>
+            <option value="17.3850,78.4867">Hyderabad</option>
+            <option value="13.0827,80.2707">Chennai</option>
+            <option value="22.5726,88.3639">Kolkata</option>
+            <option value="18.5204,73.8567">Pune</option>
+          </select>          <div class="voice-search-wrap" role="search">
+            <input id="voice-search-input" type="search" placeholder="Search founder, city, industry" aria-label="Search business directory" oninput="filterBusinesses(this.value)" />
+            <button id="voice-search-btn" class="voice-btn" type="button" onclick="startVoiceSearch()" aria-label="Search by voice" title="Search by voice">Mic</button>
+          </div>
+          <button id="fav-filter-btn" onclick="toggleFavoritesFilter()" class="btn-outline" style="white-space:nowrap;">☆ My Favorites</button>
+          <a href="#" class="btn-outline" style="white-space:nowrap;">View Full Directory →</a>
+        </div>
       </div>
 
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="businesses-grid">
 
         <!-- Card 1 -->
-        <article class="biz-card">
+        <article class="biz-card" data-id="biz-aisha" data-lat="6.5244" data-lng="3.3792">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#c9756c,#e8a89e);"></div>
+          <button class="fav-btn" data-id="biz-aisha" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
           <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
             <div class="flex justify-between items-start mb-4">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#c9756c,#7d2e2e);">A</div>
               <span class="tag">EdTech</span>
@@ -922,9 +1044,11 @@
         </article>
 
         <!-- Card 2 -->
-        <article class="biz-card">
+        <article class="biz-card" data-id="biz-maya" data-lat="19.0760" data-lng="72.8777">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#2d4a3e,#4a7c65);"></div>
+          <button class="fav-btn" data-id="biz-maya" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
           <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
             <div class="flex justify-between items-start mb-4">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#2d4a3e,#4a7c65);">M</div>
               <span class="tag" style="background:rgba(45,74,62,0.1);color:#2d4a3e;">CleanTech</span>
@@ -942,9 +1066,11 @@
         </article>
 
         <!-- Card 3 -->
-        <article class="biz-card">
+        <article class="biz-card" data-id="biz-sofia" data-lat="19.4326" data-lng="-99.1332">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#c9a84c,#e0ba5c);"></div>
+          <button class="fav-btn" data-id="biz-sofia" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
           <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
             <div class="flex justify-between items-start mb-4">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#c9a84c,#a0803a);">S</div>
               <span class="tag" style="background:rgba(201,168,76,0.1);color:#a0803a;">HealthTech</span>
@@ -955,16 +1081,18 @@
               Maternal health platform providing remote prenatal care and mental health support to rural mothers.
             </p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Pre-seed · $60K raised</span>
+              <span style="font-size:0.75rem;color:#aaa;">Pre-seed · 60K raised</span>
               <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
         <!-- Card 4 -->
-        <article class="biz-card">
+        <article class="biz-card" data-id="biz-rina" data-lat="35.6762" data-lng="139.6503">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#9b6b9b,#c499c4);"></div>
+          <button class="fav-btn" data-id="biz-rina" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
           <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
             <div class="flex justify-between items-start mb-4">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#9b6b9b,#7a4a7a);">R</div>
               <span class="tag" style="background:rgba(155,107,155,0.1);color:#7a4a7a;">FashionTech</span>
@@ -975,16 +1103,18 @@
               Circular fashion marketplace that makes sustainable style accessible and profitable for independent designers.
             </p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Seed · $320K raised</span>
+              <span style="font-size:0.75rem;color:#aaa;">Seed · 320K raised</span>
               <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
         <!-- Card 5 -->
-        <article class="biz-card">
+        <article class="biz-card" data-id="biz-lena" data-lat="52.5200" data-lng="13.4050">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#4a6fa5,#7098c9);"></div>
+          <button class="fav-btn" data-id="biz-lena" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
           <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
             <div class="flex justify-between items-start mb-4">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#4a6fa5,#2d4f7a);">L</div>
               <span class="tag" style="background:rgba(74,111,165,0.1);color:#2d4f7a;">FinTech</span>
@@ -995,14 +1125,127 @@
               AI-driven micro-lending platform designed specifically for early-stage women-owned small businesses.
             </p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Series A · $5.1M raised</span>
+              <span style="font-size:0.75rem;color:#aaa;">Series A · 5.1M raised</span>
               <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 6 — CTA card -->
-        <article style="background:var(--cream);border:1.5px dashed rgba(201,117,108,0.3);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;min-height:260px;">
+        <!-- Card 6 — Ananya Sharma (New Delhi) -->
+        <article class="biz-card" data-id="biz-ananya" data-lat="28.6139" data-lng="77.2090">
+          <div class="biz-card-accent" style="background:linear-gradient(90deg,#e07856,#f0a87e);"></div>
+          <button class="fav-btn" data-id="biz-ananya" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
+            <div class="flex justify-between items-start mb-4">
+              <div class="avatar-ring" style="background:linear-gradient(135deg,#e07856,#b9502f);">A</div>
+              <span class="tag" style="background:rgba(224,120,86,0.1);color:#b9502f;">FinTech</span>
+            </div>
+            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Ananya Sharma</h3>
+            <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">RupeeWise · New Delhi, India</p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
+              A digital lending platform offering quick, collateral-free working capital loans to women-run micro and small businesses.
+            </p>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
+              <span style="font-size:0.75rem;color:#aaa;">Seed · ₹2.5 Cr raised</span>
+              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 7 — Diya Iyer (Bengaluru) -->
+        <article class="biz-card" data-id="biz-diya" data-lat="12.9716" data-lng="77.5946">
+          <div class="biz-card-accent" style="background:linear-gradient(90deg,#3f7d5a,#6fb594);"></div>
+          <button class="fav-btn" data-id="biz-diya" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
+            <div class="flex justify-between items-start mb-4">
+              <div class="avatar-ring" style="background:linear-gradient(135deg,#3f7d5a,#2a5640);">D</div>
+              <span class="tag" style="background:rgba(63,125,90,0.1);color:#2a5640;">E-Commerce</span>
+            </div>
+            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Diya Iyer</h3>
+            <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">GreenCart · Bengaluru, India</p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
+              A marketplace connecting eco-conscious shoppers with sustainable, locally-made household and personal care products.
+            </p>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
+              <span style="font-size:0.75rem;color:#aaa;">Series A · ₹8 Cr raised</span>
+              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 8 — Kavitha Murthy (Hyderabad) -->
+        <article class="biz-card" data-id="biz-kavitha" data-lat="17.3850" data-lng="78.4867">
+          <div class="biz-card-accent" style="background:linear-gradient(90deg,#c9a84c,#a0803a);"></div>
+          <button class="fav-btn" data-id="biz-kavitha" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
+            <div class="flex justify-between items-start mb-4">
+              <div class="avatar-ring" style="background:linear-gradient(135deg,#c9a84c,#8a6a2a);">K</div>
+              <span class="tag" style="background:rgba(201,168,76,0.1);color:#8a6a2a;">HealthTech</span>
+            </div>
+            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Kavitha Murthy</h3>
+            <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">HealWell · Hyderabad, India</p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
+              An at-home diagnostics and teleconsultation service bringing affordable preventive healthcare to tier-2 and tier-3 towns.
+            </p>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
+              <span style="font-size:0.75rem;color:#aaa;">Pre-seed · ₹85 Lakhs raised</span>
+              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 9 — Kiran Mazumdar (Bengaluru) -->
+        <article class="biz-card" data-id="biz-kiran" data-lat="12.9352" data-lng="77.6245">
+          <div class="biz-card-accent" style="background:linear-gradient(90deg,#7d2e2e,#c9756c);"></div>
+          <button class="fav-btn" data-id="biz-kiran" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
+            <div class="flex justify-between items-start mb-4">
+              <div class="avatar-ring" style="background:linear-gradient(135deg,#7d2e2e,#c9756c);">K</div>
+              <span class="tag" style="background:rgba(125,46,46,0.08);color:#7d2e2e;">BioTech</span>
+            </div>
+            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Kiran Mazumdar-Shaw</h3>
+            <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">BioNova · Bengaluru, India</p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
+              Develops affordable biosimilar therapies and diagnostic kits aimed at expanding access to chronic disease care across India.
+            </p>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
+              <span style="font-size:0.75rem;color:#aaa;">Series B · ₹15 Cr raised</span>
+              <div style="display:flex;gap:0.55rem;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+                <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+                <button type="button" onclick="requestKiranMentorship(event)" class="btn-outline" style="font-size:0.72rem;padding:0.3rem 0.7rem;white-space:nowrap;">Request Mentor</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 10 — Neha Williams (Mumbai) -->
+        <article class="biz-card" data-id="biz-neha" data-lat="19.0760" data-lng="72.8777">
+          <div class="biz-card-accent" style="background:linear-gradient(90deg,#9b6b9b,#7a4a7a);"></div>
+          <button class="fav-btn" data-id="biz-neha" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <div style="padding:1.5rem;">
+            <div class="distance-tag hidden"></div>
+            <div class="flex justify-between items-start mb-4">
+              <div class="avatar-ring" style="background:linear-gradient(135deg,#9b6b9b,#5e3a5e);">N</div>
+              <span class="tag" style="background:rgba(155,107,155,0.1);color:#5e3a5e;">FashionTech</span>
+            </div>
+            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Neha Williams</h3>
+            <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">StyleLoop · Mumbai, India</p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
+              A direct-to-consumer fashion rental and resale platform helping young professionals dress sustainably on a budget.
+            </p>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
+              <span style="font-size:0.75rem;color:#aaa;">Seed · ₹3.2 Cr raised</span>
+              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 11 — CTA card -->
+        <article class="cta-list-card" style="background:var(--cream);border:1.5px dashed rgba(201,117,108,0.3);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;min-height:260px;">
           <div style="width:48px;height:48px;background:rgba(201,117,108,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;">+</div>
           <h3 style="font-size:1rem;color:var(--burgundy);margin-bottom:0.5rem;">List Your Business</h3>
           <p style="font-size:0.82rem;color:#aaa;margin-bottom:1.2rem;line-height:1.5;">Join 12,000+ founders and get discovered by investors and collaborators.</p>
@@ -1067,7 +1310,7 @@
           <div class="avatar-ring mx-auto mb-3" style="background:linear-gradient(135deg,#4a6fa5,#2d4f7a);width:60px;height:60px;font-size:1.4rem;">F</div>
           <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;">Fatima Al-Hassan</h4>
           <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;">Scale-up · MENA Markets</p>
-          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;">Bootstrapped and scaled two companies to $10M+ ARR in the Gulf and North African markets.</p>
+          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;">Bootstrapped and scaled two companies to 10M+ ARR in the Gulf and North African markets.</p>
           <div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:1rem;">
             <span class="tag">MENA</span>
             <span class="tag">Scale-up</span>
@@ -1216,7 +1459,7 @@
     <div class="modal-box">
       <div class="modal-header">
         <button class="modal-close" onclick="toggleModal('loginModal', false)" aria-label="Close">✕</button>
-        <div style="font-size:2rem;margin-bottom:0.5rem;">👑</div>
+        <div style="font-size:2rem;margin-bottom:0.5rem;"></div>
         <h2 id="loginTitle">Welcome Back</h2>
         <p>Sign in to your EmpowHer account</p>
       </div>
@@ -1446,15 +1689,346 @@
       observer.observe(el);
     });
 
+  // Helper Function: Calculates straight-line distance (Haversine formula approximation)
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // Distance in km
+  }
+
     // ── Smooth scroll for anchor links ──
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function(e) {
-        const target = document.querySelector(this.getAttribute('href'));
+        const href = this.getAttribute('href');
+        if (!href || href === '#') return;
+        const target = document.querySelector(href);
         if (target) {
           e.preventDefault();
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
+    });
+
+    // ══════════════════════════════════════════
+    //  FAVORITES — Local Storage API
+    //  Saves bookmarked ventures so they persist
+    //  across browser sessions.
+    // ══════════════════════════════════════════
+    const FAV_STORAGE_KEY = 'empowher_favorite_ventures';
+
+    function getFavoriteIds() {
+      try {
+        const stored = localStorage.getItem(FAV_STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        console.error('Could not read favorites from local storage:', e);
+        return [];
+      }
+    }
+
+    function saveFavoriteIds(ids) {
+      try {
+        localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify(ids));
+      } catch (e) {
+        console.error('Could not save favorites to local storage:', e);
+      }
+    }
+
+    function toggleFavorite(btn) {
+      const id = btn.dataset.id;
+      let favs = getFavoriteIds();
+
+      if (favs.includes(id)) {
+        favs = favs.filter(f => f !== id);
+        btn.classList.remove('active');
+        btn.textContent = '☆';
+      } else {
+        favs.push(id);
+        btn.classList.add('active');
+        btn.textContent = '★';
+      }
+
+      saveFavoriteIds(favs);
+
+      // If the favorites-only filter is currently active, re-apply it
+      if (showingFavoritesOnly) {
+        applyFavoritesFilter();
+      }
+    }
+
+    // Restore saved favorite state on page load
+    function restoreFavoritesUI() {
+      const favs = getFavoriteIds();
+      document.querySelectorAll('#businesses-grid .fav-btn').forEach(btn => {
+        if (favs.includes(btn.dataset.id)) {
+          btn.classList.add('active');
+          btn.textContent = '★';
+        }
+      });
+    }
+    restoreFavoritesUI();
+
+    // ── "My Favorites" filter toggle ──
+    let showingFavoritesOnly = false;
+
+    function applyFavoritesFilter() {
+      const favs = getFavoriteIds();
+      document.querySelectorAll('#businesses-grid .biz-card').forEach(card => {
+        const id = card.dataset.id;
+        card.style.display = (!showingFavoritesOnly || favs.includes(id)) ? '' : 'none';
+      });
+      // Always keep the "List Your Business" CTA card visible
+      const cta = document.querySelector('#businesses-grid .cta-list-card');
+      if (cta) cta.style.display = '';
+    }
+
+    function toggleFavoritesFilter() {
+      const favs = getFavoriteIds();
+      const btn = document.getElementById('fav-filter-btn');
+
+      if (!showingFavoritesOnly && favs.length === 0) {
+        alert("You haven't saved any ventures yet. Tap the ☆ icon on a business card to add it to your favorites.");
+        return;
+      }
+
+      showingFavoritesOnly = !showingFavoritesOnly;
+      applyFavoritesFilter();
+
+      if (showingFavoritesOnly) {
+        btn.innerHTML = '★ Show All Ventures';
+        btn.classList.add('btn-primary');
+        btn.classList.remove('btn-outline');
+      } else {
+        btn.innerHTML = '☆ My Favorites';
+        btn.classList.add('btn-outline');
+        btn.classList.remove('btn-primary');
+      }
+    }
+
+    // ══════════════════════════════════════════
+    //  GEOLOCATION — Founders Near Me
+    //  Detects the user's current location and
+    //  sorts/labels business cards by proximity.
+    //  Falls back to a manual city picker if
+    //  geolocation is blocked or unavailable
+    //  (common on file:// pages or in sandboxed
+    //  previews).
+    // ══════════════════════════════════════════
+    function findNearMeBusinesses() {
+      const btn = document.getElementById('near-me-btn');
+      const fallback = document.getElementById('city-fallback');
+
+      if (!navigator.geolocation) {
+        btn.innerHTML = '📍 Select your city →';
+        fallback.classList.remove('hidden');
+        return;
+      }
+
+      btn.innerHTML = '⏳ Locating you...';
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          sortBusinessesByDistance(userLat, userLng);
+          btn.innerHTML = '✨ Sorted by Nearest';
+          fallback.classList.add('hidden');
+        },
+        (error) => {
+          console.error("Error fetching location:", error);
+          // Geolocation blocked, denied, timed out, or unavailable —
+          // offer the manual city picker instead.
+          btn.innerHTML = '📍 Select your city →';
+          fallback.classList.remove('hidden');
+        },
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 }
+      );
+    }
+
+    // Used by the manual "Choose your city" dropdown fallback
+    function useFallbackCity() {
+      const select = document.getElementById('city-fallback');
+      const value = select.value;
+      if (!value) return;
+
+      const [lat, lng] = value.split(',').map(Number);
+      sortBusinessesByDistance(lat, lng);
+
+      const btn = document.getElementById('near-me-btn');
+      btn.innerHTML = `✨ Sorted near ${select.options[select.selectedIndex].text}`;
+    }
+
+    function sortBusinessesByDistance(userLat, userLng) {
+      const grid = document.getElementById('businesses-grid');
+      const cards = Array.from(grid.querySelectorAll('.biz-card[data-lat]'));
+      const cta = grid.querySelector('.cta-list-card');
+      const NEARBY_THRESHOLD_KM = 100;
+
+      cards.forEach(card => {
+        const cardLat = parseFloat(card.dataset.lat);
+        const cardLng = parseFloat(card.dataset.lng);
+        const distance = calculateDistance(userLat, userLng, cardLat, cardLng);
+        card.dataset.calculatedDistance = distance;
+
+        const tag = card.querySelector('.distance-tag');
+        if (tag) {
+          if (distance <= NEARBY_THRESHOLD_KM) {
+            tag.textContent = `📍 Near you · ~${distance.toFixed(0)} km away`;
+            tag.style.color = 'var(--forest)';
+          } else {
+            tag.textContent = `📍 ~${distance.toFixed(0)} km away from you`;
+            tag.style.color = 'var(--rose)';
+          }
+          tag.classList.remove('hidden');
+        }
+      });
+
+      cards.sort((a, b) => parseFloat(a.dataset.calculatedDistance) - parseFloat(b.dataset.calculatedDistance));
+
+      cards.forEach(card => grid.appendChild(card));
+      // Keep the "List Your Business" CTA card pinned at the end
+      if (cta) grid.appendChild(cta);
+    }
+    // === Web Notifications API: simulated live mentorship alert ===
+    function requestKiranMentorship(event) {
+      if (event) event.preventDefault();
+      const message = 'EmpowHer: Your mentorship request has been sent successfully!';
+
+      if (!('Notification' in window)) {
+        showApiToast(message);
+        return;
+      }
+
+      if (Notification.permission === 'granted') {
+        new Notification(message);
+        showApiToast('Mentorship request sent. Browser notification triggered.');
+        return;
+      }
+
+      if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') new Notification(message);
+          showApiToast(message);
+        });
+        return;
+      }
+
+      showApiToast(message);
+    }
+
+    // === Web Speech API: hands-free directory search ===
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+
+    function startVoiceSearch() {
+      const micBtn = document.getElementById('voice-search-btn');
+      const searchInput = document.getElementById('voice-search-input');
+
+      if (!SpeechRecognition) {
+        showApiToast('Voice search is not supported in this browser. Try Chrome or Edge.');
+        return;
+      }
+
+      if (!recognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+      }
+
+      micBtn.classList.add('listening');
+      micBtn.textContent = '...';
+      showApiToast('Listening for a founder, city, or industry...');
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+        searchInput.value = transcript;
+        filterBusinesses(transcript);
+        showApiToast(`Searching directory for "${transcript}"`);
+      };
+
+      recognition.onerror = () => {
+        showApiToast('Voice search could not hear that clearly. Please try again.');
+      };
+
+      recognition.onend = () => {
+        micBtn.classList.remove('listening');
+        micBtn.textContent = 'Mic';
+      };
+
+      recognition.start();
+    }
+
+    function filterBusinesses(query) {
+      const normalizedQuery = query.trim().toLowerCase();
+      document.querySelectorAll('#businesses-grid .biz-card').forEach(card => {
+        const matches = !normalizedQuery || card.innerText.toLowerCase().includes(normalizedQuery);
+        card.classList.toggle('voice-hidden', !matches);
+      });
+    }
+
+    // === Clipboard API: instant profile sharing from Connect links ===
+    async function copyBusinessProfile(card) {
+      const founder = card.querySelector('h3')?.innerText.trim() || 'EmpowHer founder';
+      const companyLine = card.querySelector('p')?.innerText.trim() || 'EmpowHer Network';
+      const industry = card.querySelector('.tag')?.innerText.trim() || 'Founder';
+      const profileUrl = `${window.location.origin}${window.location.pathname}#${card.dataset.id || 'businesses'}`;
+      const profileText = `${founder} | ${companyLine} | ${industry} | ${profileUrl}`;
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(profileText);
+        } else {
+          copyTextFallback(profileText);
+        }
+        showApiToast('Profile link copied!');
+      } catch (error) {
+        copyTextFallback(profileText);
+        showApiToast('Profile link copied!');
+      }
+    }
+
+    function copyTextFallback(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      textarea.remove();
+    }
+
+    function showApiToast(message) {
+      let toast = document.getElementById('api-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'api-toast';
+        toast.className = 'api-toast';
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        document.body.appendChild(toast);
+      }
+
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showApiToast.timer);
+      showApiToast.timer = setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    document.querySelectorAll('#businesses-grid .biz-card a').forEach(link => {
+      if (link.textContent.includes('Connect')) {
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          copyBusinessProfile(link.closest('.biz-card'));
+        });
+      }
     });
   </script>
 </body>
