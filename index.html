@@ -17,7 +17,7 @@
       --charcoal: #1e1e1e;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'DM Sans', sans-serif;
@@ -26,7 +26,7 @@
       overflow-x: hidden;
     }
 
-    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+    h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 
     /* ── Grain overlay ── */
     body::before {
@@ -39,15 +39,34 @@
       opacity: 0.5;
     }
 
-    /* ── Navbar ── */
-    nav {
+    /* ═══════════════════════════════════════
+       FOOTER NAV RESET
+       Ensures footer <nav> elements never
+       inherit any sticky / header behaviour.
+    ═══════════════════════════════════════ */
+    footer nav {
+      position: static;
+      background: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: none;
+      box-shadow: none;
+      z-index: auto;
+    }
+
+    /* ═══════════════════════════════════════
+       NAVBAR — scoped to #main-nav only so
+       footer <nav> elements are unaffected
+    ═══════════════════════════════════════ */
+    #main-nav {
       position: sticky;
       top: 0;
-      z-index: 100;
-      background: rgba(250, 246, 241, 0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      z-index: 200;
+      background: rgba(250, 246, 241, 0.90);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(201, 117, 108, 0.18);
+      transition: box-shadow 0.3s;
     }
 
     .nav-logo span {
@@ -56,11 +75,7 @@
       font-size: 1.4rem;
       color: var(--burgundy);
     }
-
-    .nav-logo span em {
-      color: var(--rose);
-      font-style: italic;
-    }
+    .nav-logo span em { color: var(--rose); font-style: italic; }
 
     .nav-link {
       position: relative;
@@ -69,48 +84,46 @@
       color: #555;
       text-decoration: none;
       transition: color 0.2s;
+      padding-bottom: 2px;
     }
-
     .nav-link::after {
       content: '';
       position: absolute;
-      bottom: -2px;
-      left: 0;
-      width: 0;
-      height: 1.5px;
+      bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
       background: var(--rose);
       transition: width 0.3s ease;
     }
-
     .nav-link:hover { color: var(--burgundy); }
     .nav-link:hover::after { width: 100%; }
 
+    /* ── Buttons ── */
     .btn-primary {
       background: var(--burgundy);
       color: #fff;
       padding: 0.55rem 1.4rem;
-      border-radius: 2px;
+      border-radius: 3px;
       font-size: 0.85rem;
       font-weight: 600;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      transition: background 0.25s, transform 0.2s;
+      transition: background 0.25s, transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
       border: none;
       display: inline-block;
       text-decoration: none;
     }
-
     .btn-primary:hover {
       background: var(--rose);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(201,117,108,0.35);
     }
 
     .btn-outline {
       border: 1.5px solid var(--burgundy);
       color: var(--burgundy);
       padding: 0.55rem 1.4rem;
-      border-radius: 2px;
+      border-radius: 3px;
       font-size: 0.85rem;
       font-weight: 600;
       letter-spacing: 0.04em;
@@ -121,137 +134,441 @@
       display: inline-block;
       text-decoration: none;
     }
-
     .btn-outline:hover {
       background: var(--burgundy);
       color: #fff;
+      transform: translateY(-1px);
     }
 
-    /* ── Hero ── */
+    /* ═══════════════════════════════════════
+       PROBLEM BANNER (NEW)
+    ═══════════════════════════════════════ */
+    .problem-banner {
+      background: var(--burgundy);
+      color: rgba(255,255,255,0.9);
+      text-align: center;
+      padding: 0.55rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      position: relative;
+      overflow: hidden;
+    }
+    .problem-banner::before {
+      content: '';
+      position: absolute;
+      left: -100%;
+      top: 0;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+      animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer { to { left: 150%; } }
+
+    /* ═══════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════ */
     .hero-section {
-      min-height: 92vh;
+      min-height: 95vh;
       display: flex;
       align-items: center;
       position: relative;
       overflow: hidden;
     }
 
-    .hero-bg-shape {
+    /* Animated background blobs */
+    .blob {
       position: absolute;
-      top: -60px;
-      right: -100px;
-      width: 55vw;
-      height: 110%;
-      background: linear-gradient(145deg, #e8c5b0 0%, #c9756c22 60%, transparent 100%);
-      border-radius: 0 0 60% 40%;
-      z-index: 0;
-    }
-
-    .hero-bg-circle {
-      position: absolute;
-      bottom: -120px;
-      left: -80px;
-      width: 400px;
-      height: 400px;
-      border: 60px solid rgba(201,117,108,0.08);
       border-radius: 50%;
-      z-index: 0;
+      filter: blur(60px);
+      opacity: 0.35;
+      animation: blobFloat 8s ease-in-out infinite;
+    }
+    .blob-1 { width: 500px; height: 500px; background: #e8c5b0; top: -100px; right: -100px; animation-delay: 0s; }
+    .blob-2 { width: 350px; height: 350px; background: #c9756c; bottom: -80px; left: -60px; animation-delay: -3s; opacity: 0.2; }
+    .blob-3 { width: 250px; height: 250px; background: #c9a84c; top: 40%; left: 35%; animation-delay: -5s; opacity: 0.15; }
+
+    @keyframes blobFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(20px, -20px) scale(1.04); }
+      66% { transform: translate(-15px, 10px) scale(0.97); }
     }
 
-    .hero-badge {
+    .hero-problem-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(201,117,108,0.12);
-      border: 1px solid rgba(201,117,108,0.3);
-      color: var(--rose);
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+      gap: 8px;
+      background: rgba(125,46,46,0.08);
+      border: 1px solid rgba(201,117,108,0.35);
+      color: var(--burgundy);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      padding: 0.3rem 0.85rem;
+      padding: 0.35rem 1rem;
       border-radius: 100px;
       margin-bottom: 1.5rem;
     }
-
-    .hero-title {
-      font-size: clamp(2.6rem, 6vw, 5rem);
-      line-height: 1.08;
-      color: var(--charcoal);
-      margin-bottom: 1.5rem;
+    .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--rose);
+      animation: pulseDot 1.8s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.6); opacity: 0.5; }
     }
 
+    .hero-title {
+      font-size: clamp(2.4rem, 5.5vw, 4.8rem);
+      line-height: 1.06;
+      color: var(--charcoal);
+      margin-bottom: 0.75rem;
+    }
     .hero-title .highlight {
       color: var(--rose);
       font-style: italic;
+      position: relative;
+      display: inline-block;
+    }
+    /* Underline animation on highlight */
+    .hero-title .highlight::after {
+      content: '';
+      position: absolute;
+      bottom: 4px; left: 0;
+      width: 0; height: 3px;
+      background: var(--rose);
+      border-radius: 2px;
+      animation: underlineDraw 1.2s ease 0.6s forwards;
+    }
+    @keyframes underlineDraw { to { width: 100%; } }
+
+    .hero-problem-line {
+      font-size: 1.05rem;
+      color: var(--burgundy);
+      font-weight: 600;
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.4s forwards;
     }
 
-    .hero-stat {
+    .hero-desc {
+      color: #666;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+      max-width: 480px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.55s forwards;
+    }
+
+    /* ── Animated stat counters ── */
+    .stat-card {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(201,117,108,0.15);
+      border-radius: 8px;
+      padding: 1rem 1.4rem;
       text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
     }
-
-    .hero-stat .num {
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(125,46,46,0.1);
+    }
+    .stat-num {
       font-family: 'Playfair Display', serif;
-      font-size: 1.9rem;
+      font-size: 2rem;
       font-weight: 900;
       color: var(--burgundy);
+      line-height: 1;
     }
-
-    .hero-stat .label {
-      font-size: 0.78rem;
-      color: #888;
+    .stat-label {
+      font-size: 0.72rem;
+      color: #999;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.07em;
+      margin-top: 0.2rem;
     }
 
-    /* ── Marquee ── */
+    /* ── Hero right panel ── */
+    .hero-visual {
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-img-frame {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 460px;
+    }
+    .hero-img-frame img {
+      width: 90%;
+      max-width: 440px;
+      height: 580px;
+      object-fit: cover;
+      object-position: top center;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 30px 80px rgba(125,46,46,0.18);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .floating-card {
+      position: absolute;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(201,117,108,0.2);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      font-size: 0.8rem;
+      z-index: 5;
+      animation: floatCard 5s ease-in-out infinite;
+    }
+    .floating-card-1 { top: 10%; left: -20px; animation-delay: 0s; }
+    .floating-card-2 { bottom: 22%; right: -10px; animation-delay: -2.5s; }
+    .floating-card-3 { top: 52%; left: -30px; animation-delay: -1.2s; }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ═══════════════════════════════════════
+       MARQUEE
+    ═══════════════════════════════════════ */
     .marquee-track {
       display: flex;
       gap: 3rem;
       animation: marquee 28s linear infinite;
       white-space: nowrap;
     }
-
     @keyframes marquee {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
 
-    /* ── Section headers ── */
+    /* ═══════════════════════════════════════
+       SECTION HEADERS
+    ═══════════════════════════════════════ */
     .section-eyebrow {
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--rose);
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.5rem;
     }
-
     .section-title {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
       line-height: 1.15;
       color: var(--charcoal);
     }
 
-    /* ── Business Cards ── */
+    /* ═══════════════════════════════════════
+       PROBLEM STATS SECTION (NEW)
+    ═══════════════════════════════════════ */
+    .problem-section {
+      background: var(--charcoal);
+      padding: 5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .problem-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(201,117,108,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.08) 0%, transparent 50%);
+    }
+    .problem-stat-big {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 900;
+      color: var(--rose);
+      line-height: 1;
+    }
+    .problem-stat-label {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.65);
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
+    .problem-divider {
+      width: 1px;
+      background: rgba(255,255,255,0.1);
+      align-self: stretch;
+    }
+
+    /* ═══════════════════════════════════════
+       FEATURES
+    ═══════════════════════════════════════ */
+    .feature-card {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 6px;
+      padding: 2rem;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 3px;
+      background: linear-gradient(90deg, var(--rose), var(--burgundy));
+      transition: width 0.4s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(125,46,46,0.1);
+      border-color: rgba(201,117,108,0.25);
+    }
+    .feature-card:hover::before { width: 100%; }
+
+    .feature-icon-wrap {
+      width: 52px; height: 52px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+      transition: transform 0.3s;
+    }
+    .feature-card:hover .feature-icon-wrap { transform: scale(1.1) rotate(-4deg); }
+
+    /* ═══════════════════════════════════════
+       DIRECTORY FILTER BAR (NEW)
+    ═══════════════════════════════════════ */
+    .filter-bar {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(201,117,108,0.2);
+      border-radius: 8px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .filter-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #999;
+      white-space: nowrap;
+    }
+
+    .filter-select {
+      padding: 0.5rem 0.85rem;
+      border: 1.5px solid #e5e0db;
+      border-radius: 4px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      color: var(--charcoal);
+      background: var(--cream);
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .filter-select:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(201,117,108,0.15);
+    }
+
+    /* JS Event 3 — Mouseover: result tag changes dynamically */
+    .filter-result-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(125,46,46,0.07);
+      border: 1px solid rgba(125,46,46,0.15);
+      color: var(--burgundy);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      transition: all 0.3s;
+      margin-left: auto;
+    }
+    .filter-result-tag.updated {
+      background: rgba(45,74,62,0.1);
+      border-color: rgba(45,74,62,0.25);
+      color: var(--forest);
+      animation: tagPop 0.3s ease;
+    }
+    @keyframes tagPop {
+      0% { transform: scale(0.9); }
+      60% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .voice-search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--cream);
+      border: 1.5px solid rgba(125,46,46,0.18);
+      border-radius: 4px;
+      padding: 0.3rem;
+      flex: 1;
+      min-width: 180px;
+    }
+    .voice-search-wrap input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 0.4rem 0.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      color: var(--charcoal);
+    }
+    .voice-btn {
+      width: 32px; height: 32px;
+      border: none;
+      border-radius: 4px;
+      background: var(--burgundy);
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .voice-btn:hover { background: var(--rose); }
+    .voice-btn.listening { background: var(--forest); }
+
+    /* ═══════════════════════════════════════
+       BUSINESS CARDS
+    ═══════════════════════════════════════ */
     .biz-card {
       background: #fff;
       border: 1px solid rgba(0,0,0,0.07);
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
       position: relative;
+      cursor: default;
+      /* JS Event 3 — Mouseover handled in JS */
     }
-
     .biz-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(125,46,46,0.1);
+      box-shadow: 0 24px 60px rgba(125,46,46,0.12);
+      border-color: rgba(201,117,108,0.3);
     }
 
-    .biz-card-accent {
-      height: 4px;
-      width: 100%;
-    }
+    .biz-card-accent { height: 4px; width: 100%; }
 
     .biz-card .tag {
       display: inline-block;
@@ -260,57 +577,33 @@
       letter-spacing: 0.05em;
       text-transform: uppercase;
       padding: 0.2rem 0.6rem;
-      border-radius: 2px;
+      border-radius: 3px;
       background: rgba(201,117,108,0.1);
       color: var(--rose);
     }
 
-    /* ── Favorite / Bookmark button ── */
     .fav-btn {
       position: absolute;
-      top: 0.85rem;
-      right: 0.85rem;
+      top: 0.85rem; right: 0.85rem;
       z-index: 3;
-      width: 34px;
-      height: 34px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       border: none;
       background: rgba(255,255,255,0.92);
-      font-size: 1.05rem;
-      line-height: 1;
+      font-size: 1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #ccc;
       box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      transition: color 0.2s, transform 0.2s, background 0.2s;
+      transition: color 0.2s, transform 0.2s;
     }
-
-    .fav-btn:hover {
-      transform: scale(1.1);
-      color: var(--gold);
-    }
-
-    .fav-btn.active {
-      color: var(--gold);
-      background: rgba(255,255,255,0.96);
-    }
-
-    .biz-card .distance-tag {
-      font-size: 0.72rem;
-      color: var(--rose);
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .biz-card .distance-tag.hidden {
-      display: none;
-    }
+    .fav-btn:hover { transform: scale(1.15); color: var(--gold); }
+    .fav-btn.active { color: var(--gold); }
 
     .avatar-ring {
-      width: 52px;
-      height: 52px;
+      width: 52px; height: 52px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -321,56 +614,54 @@
       color: #fff;
     }
 
-    /* ── Features ── */
-    .feature-icon-wrap {
-      width: 52px;
-      height: 52px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
+    .distance-tag {
+      font-size: 0.72rem;
+      color: var(--rose);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
     }
+    .distance-tag.hidden { display: none; }
 
-    /* ── Mentor Cards ── */
+    .biz-card.voice-hidden { display: none !important; }
+    .biz-card.filtered-out { display: none !important; }
+
+    /* ═══════════════════════════════════════
+       MENTOR CARDS
+    ═══════════════════════════════════════ */
     .mentor-card {
       background: #fff;
       border: 1px solid rgba(0,0,0,0.07);
-      border-radius: 4px;
+      border-radius: 6px;
       padding: 1.5rem;
       transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
     }
-
     .mentor-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 50px rgba(125,46,46,0.09);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 50px rgba(125,46,46,0.1);
     }
 
-    /* ── CTA Section ── */
+    /* ═══════════════════════════════════════
+       CTA SECTION
+    ═══════════════════════════════════════ */
     .cta-section {
       background: var(--burgundy);
       position: relative;
       overflow: hidden;
     }
-
     .cta-section::before {
       content: '';
       position: absolute;
-      top: -100px;
-      right: -100px;
-      width: 400px;
-      height: 400px;
+      top: -120px; right: -120px;
+      width: 500px; height: 500px;
       background: rgba(255,255,255,0.04);
       border-radius: 50%;
     }
-
     .cta-section::after {
       content: '';
       position: absolute;
-      bottom: -80px;
-      left: 5%;
-      width: 300px;
-      height: 300px;
+      bottom: -100px; left: 5%;
+      width: 350px; height: 350px;
       background: rgba(255,255,255,0.03);
       border-radius: 50%;
     }
@@ -378,8 +669,8 @@
     .btn-cta {
       background: var(--gold);
       color: var(--charcoal);
-      padding: 0.8rem 2rem;
-      border-radius: 2px;
+      padding: 0.85rem 2rem;
+      border-radius: 3px;
       font-size: 0.9rem;
       font-weight: 700;
       letter-spacing: 0.04em;
@@ -390,18 +681,16 @@
       display: inline-block;
       text-decoration: none;
     }
-
     .btn-cta:hover {
       background: #e0ba5c;
       transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(201,168,76,0.3);
+      box-shadow: 0 8px 30px rgba(201,168,76,0.35);
     }
 
-    /* ── Footer ── */
-    footer {
-      background: var(--charcoal);
-      color: rgba(255,255,255,0.65);
-    }
+    /* ═══════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════ */
+    footer { background: var(--charcoal); color: rgba(255,255,255,0.65); }
 
     footer .footer-logo {
       font-family: 'Playfair Display', serif;
@@ -409,29 +698,23 @@
       font-size: 1.5rem;
       color: var(--blush);
     }
-
     footer .footer-link {
       color: rgba(255,255,255,0.55);
       font-size: 0.875rem;
       text-decoration: none;
       transition: color 0.2s;
     }
-
     footer .footer-link:hover { color: var(--blush); }
-
     footer .footer-heading {
-      font-family: 'DM Sans', sans-serif;
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--blush);
       margin-bottom: 1rem;
     }
-
     .social-icon {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       border-radius: 50%;
       border: 1px solid rgba(255,255,255,0.2);
       display: inline-flex;
@@ -442,92 +725,42 @@
       text-decoration: none;
       transition: all 0.2s;
     }
-
     .social-icon:hover {
       border-color: var(--blush);
       color: var(--blush);
       background: rgba(232,197,176,0.08);
     }
 
-    /* ── Divider ornament ── */
-    .ornament {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--blush);
-    }
-
-    .ornament::before, .ornament::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(201,117,108,0.2);
-    }
-
-    /* ── Mobile menu toggle ── */
-    #mobile-menu { display: none; }
-    #mobile-menu.open { display: block; }
-
-    @media (max-width: 768px) {
-      .hero-bg-shape { width: 100vw; right: -30px; opacity: 0.4; }
-    }
-
-    /* ── Fade-in animations ── */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(30px);
-      animation: fadeUp 0.7s ease forwards;
-    }
-
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.22s; }
-    .delay-3 { animation-delay: 0.36s; }
-    .delay-4 { animation-delay: 0.5s; }
-    .delay-5 { animation-delay: 0.65s; }
-
-    /* ── Modals ── */
+    /* ═══════════════════════════════════════
+       MODALS
+    ═══════════════════════════════════════ */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(30, 10, 10, 0.55);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      background: rgba(30, 10, 10, 0.6);
+      backdrop-filter: blur(6px);
       z-index: 10000;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 1.5rem;
-      opacity: 1;
       transition: opacity 0.25s ease;
     }
-
-    .modal-backdrop.hidden {
-      display: none;
-    }
-
-    .modal-backdrop.fading {
-      opacity: 0;
-    }
+    .modal-backdrop.hidden { display: none; }
+    .modal-backdrop.fading { opacity: 0; }
 
     .modal-box {
       background: #fff;
-      border-radius: 8px;
+      border-radius: 10px;
       width: 100%;
-      max-width: 440px;
-      box-shadow: 0 32px 80px rgba(125,46,46,0.22);
+      max-width: 460px;
+      box-shadow: 0 40px 100px rgba(125,46,46,0.25);
       overflow: hidden;
       transform: scale(1);
       transition: transform 0.25s ease;
       position: relative;
     }
-
-    .modal-backdrop.fading .modal-box {
-      transform: scale(0.96);
-    }
+    .modal-backdrop.fading .modal-box { transform: scale(0.95); }
 
     .modal-header {
       background: linear-gradient(135deg, #7d2e2e, #c9756c);
@@ -535,25 +768,18 @@
       text-align: center;
       position: relative;
     }
-
     .modal-header h2 {
       font-family: 'Playfair Display', serif;
       font-size: 1.6rem;
       color: #fff;
       margin-bottom: 0.3rem;
     }
-
-    .modal-header p {
-      font-size: 0.82rem;
-      color: rgba(255,255,255,0.75);
-    }
+    .modal-header p { font-size: 0.82rem; color: rgba(255,255,255,0.75); }
 
     .modal-close {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 30px;
-      height: 30px;
+      top: 1rem; right: 1rem;
+      width: 30px; height: 30px;
       border-radius: 50%;
       background: rgba(255,255,255,0.15);
       border: none;
@@ -564,31 +790,25 @@
       align-items: center;
       justify-content: center;
       transition: background 0.2s;
-      line-height: 1;
     }
-
     .modal-close:hover { background: rgba(255,255,255,0.3); }
 
-    .modal-body {
-      padding: 1.8rem 2rem 2rem;
-    }
+    .modal-body { padding: 1.8rem 2rem 2rem; }
 
-    .modal-field {
-      margin-bottom: 1.1rem;
-    }
-
+    /* JS Event 2 — Focus: glowing field highlight */
+    .modal-field { margin-bottom: 1.1rem; position: relative; }
     .modal-field label {
       display: block;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: #666;
+      color: #888;
       margin-bottom: 0.4rem;
     }
-
     .modal-field input,
-    .modal-field select {
+    .modal-field select,
+    .modal-field textarea {
       width: 100%;
       padding: 0.65rem 0.9rem;
       border: 1.5px solid #e5e0db;
@@ -597,19 +817,49 @@
       font-size: 0.9rem;
       color: var(--charcoal);
       background: var(--cream);
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
       outline: none;
     }
-
-    .modal-field input:focus,
-    .modal-field select:focus {
+    /* Focus state handled by JS Event 2 */
+    .modal-field input.focused,
+    .modal-field select.focused,
+    .modal-field textarea.focused {
       border-color: var(--rose);
       background: #fff;
+      box-shadow: 0 0 0 4px rgba(201,117,108,0.12);
     }
+    .modal-field input.error,
+    .modal-field select.error,
+    .modal-field textarea.error {
+      border-color: #e05555;
+      box-shadow: 0 0 0 3px rgba(224,85,85,0.12);
+    }
+    .field-error {
+      display: none;
+      font-size: 0.72rem;
+      color: #e05555;
+      font-weight: 600;
+      margin-top: 0.3rem;
+    }
+    .field-error.visible { display: block; }
+
+    /* JS Event 1 — Input: live character count */
+    .char-count-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.3rem;
+    }
+    .char-count {
+      font-size: 0.7rem;
+      color: #bbb;
+      transition: color 0.2s;
+    }
+    .char-count.warning { color: var(--gold); }
+    .char-count.over { color: #e05555; font-weight: 700; }
 
     .modal-submit {
       width: 100%;
-      padding: 0.75rem;
+      padding: 0.8rem;
       background: var(--burgundy);
       color: #fff;
       border: none;
@@ -623,11 +873,7 @@
       transition: background 0.25s, transform 0.2s;
       margin-top: 0.5rem;
     }
-
-    .modal-submit:hover {
-      background: var(--rose);
-      transform: translateY(-1px);
-    }
+    .modal-submit:hover { background: var(--rose); transform: translateY(-1px); }
 
     .modal-switch {
       text-align: center;
@@ -635,14 +881,12 @@
       font-size: 0.82rem;
       color: #888;
     }
-
     .modal-switch a {
       color: var(--rose);
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
     }
-
     .modal-switch a:hover { text-decoration: underline; }
 
     .modal-divider {
@@ -653,111 +897,134 @@
       color: #ccc;
       font-size: 0.75rem;
     }
-
-    .modal-divider::before,
-    .modal-divider::after {
+    .modal-divider::before, .modal-divider::after {
       content: '';
       flex: 1;
       height: 1px;
       background: #e8e3de;
     }
-    /* -- Browser API demo controls -- */
-    .voice-search-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-      background: var(--cream);
-      border: 1.5px solid rgba(125,46,46,0.18);
-      border-radius: 4px;
-      padding: 0.3rem;
-    }
 
-    .voice-search-wrap input {
-      width: min(230px, 48vw);
-      border: none;
-      outline: none;
-      background: transparent;
-      padding: 0.45rem 0.55rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      color: var(--charcoal);
-    }
-
-    .voice-btn {
-      width: 34px;
-      height: 34px;
-      border: none;
-      border-radius: 4px;
-      background: var(--burgundy);
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .voice-btn:hover { background: var(--rose); transform: translateY(-1px); }
-    .voice-btn.listening { background: var(--forest); }
-
-    .api-toast {
-      position: fixed;
-      right: 1.25rem;
-      bottom: 1.25rem;
-      z-index: 10001;
-      max-width: min(340px, calc(100vw - 2rem));
-      background: var(--charcoal);
-      color: #fff;
-      padding: 0.85rem 1rem;
-      border-radius: 6px;
-      box-shadow: 0 18px 55px rgba(0,0,0,0.22);
-      font-size: 0.86rem;
-      line-height: 1.45;
+    /* ═══════════════════════════════════════
+       SCROLL ANIMATIONS
+    ═══════════════════════════════════════ */
+    .reveal {
       opacity: 0;
-      transform: translateY(12px);
-      pointer-events: none;
-      transition: opacity 0.22s ease, transform 0.22s ease;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
     }
-
-    .api-toast.show {
+    .reveal.visible {
       opacity: 1;
       transform: translateY(0);
     }
 
-    .biz-card.voice-hidden { display: none !important; }
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.65s ease forwards;
+    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.22s; }
+    .delay-3 { animation-delay: 0.36s; }
+    .delay-4 { animation-delay: 0.52s; }
+
+    /* ═══════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════ */
+    .api-toast {
+      position: fixed;
+      right: 1.25rem; bottom: 1.25rem;
+      z-index: 10001;
+      max-width: min(360px, calc(100vw - 2rem));
+      background: var(--charcoal);
+      color: #fff;
+      padding: 0.85rem 1.1rem;
+      border-radius: 8px;
+      box-shadow: 0 18px 55px rgba(0,0,0,0.25);
+      font-size: 0.85rem;
+      line-height: 1.45;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .api-toast.show { opacity: 1; transform: translateY(0); }
+    .api-toast .toast-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    /* ── Mobile ── */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: block; }
+
+    @media (max-width: 768px) {
+      .blob-1 { opacity: 0.2; }
+      .floating-card { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .blob, .floating-card, .marquee-track, .pulse-dot { animation: none; }
+    }
   </style>
 </head>
 <body>
-
-  <!-- ══════════════════════════════════════════ -->
-  <!--  NAVBAR                                    -->
-  <!-- ══════════════════════════════════════════ -->
-  <nav>
+  <!-- ════════════════════════════════════════
+       NAVBAR
+  ════════════════════════════════════════ -->
+  <nav id="main-nav">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
-      <!-- Logo -->
       <a href="#" class="nav-logo flex items-center gap-2">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="13" stroke="#c9756c" stroke-width="1.5"/>
-          <path d="M8 16c0-4 4-8 8-4" stroke="#7d2e2e" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="14" cy="10" r="2.5" fill="#c9756c"/>
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7d2e2e"/>
+              <stop offset="100%" stop-color="#c9756c"/>
+            </linearGradient>
+            <linearGradient id="petalGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#c9756c" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#c9a84c" stop-opacity="0.12"/>
+            </linearGradient>
+          </defs>
+          <!-- Lotus petals: resilience, purity, Indian cultural resonance -->
+          <ellipse cx="18" cy="10" rx="3.2" ry="6.5" fill="url(#petalGrad)" transform="rotate(0 18 18)"/>
+          <ellipse cx="18" cy="10" rx="3.2" ry="6.5" fill="url(#petalGrad)" transform="rotate(45 18 18)"/>
+          <ellipse cx="18" cy="10" rx="3.2" ry="6.5" fill="url(#petalGrad)" transform="rotate(90 18 18)"/>
+          <ellipse cx="18" cy="10" rx="3.2" ry="6.5" fill="url(#petalGrad)" transform="rotate(135 18 18)"/>
+          <ellipse cx="18" cy="10" rx="3.2" ry="6.5" fill="url(#petalGrad)" transform="rotate(180 18 18)"/>
+          <ellipse cx="18" cy="10" rx="3.2" ry="6.5" fill="url(#petalGrad)" transform="rotate(225 18 18)"/>
+          <ellipse cx="18" cy="10" rx="3.2" ry="6.5" fill="url(#petalGrad)" transform="rotate(270 18 18)"/>
+          <ellipse cx="18" cy="10" rx="3.2" ry="6.5" fill="url(#petalGrad)" transform="rotate(315 18 18)"/>
+          <!-- Venus circle: womanhood & wholeness -->
+          <circle cx="18" cy="14.5" r="7.5" stroke="url(#logoGrad)" stroke-width="2.2" fill="none"/>
+          <!-- Stem + crossbar: female symbol (Venus/♀) -->
+          <line x1="18" y1="22" x2="18" y2="30" stroke="url(#logoGrad)" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="13.5" y1="26.5" x2="22.5" y2="26.5" stroke="url(#logoGrad)" stroke-width="2.2" stroke-linecap="round"/>
+          <!-- Arrow pointing up: ambition, rising, breaking ceilings -->
+          <polyline points="14.5,6.5 18,2.5 21.5,6.5" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <!-- Centre dot: the individual founder at the heart of it all -->
+          <circle cx="18" cy="14.5" r="2.8" fill="url(#logoGrad)"/>
         </svg>
         <span>Empow<em>Her</em></span>
       </a>
 
-      <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8">
+        <a href="#problem" class="nav-link">The Gap</a>
         <a href="#features" class="nav-link">Platform</a>
         <a href="#businesses" class="nav-link">Directory</a>
         <a href="#mentors" class="nav-link">Mentors</a>
-        <a href="#resources" class="nav-link">Resources</a>
         <a href="#community" class="nav-link">Community</a>
       </nav>
 
-      <!-- CTA Buttons -->
       <div class="hidden md:flex items-center gap-3">
         <button onclick="toggleModal('loginModal', true)" class="btn-outline">Log In</button>
         <button onclick="toggleModal('registerModal', true)" class="btn-primary">Join Free</button>
       </div>
 
-      <!-- Hamburger -->
       <button id="hamburger" onclick="toggleMenu()" class="md:hidden flex flex-col gap-1.5 p-1" aria-label="Toggle menu">
         <span class="w-6 h-0.5 bg-gray-700 block"></span>
         <span class="w-6 h-0.5 bg-gray-700 block"></span>
@@ -765,37 +1032,36 @@
       </button>
     </div>
 
-    <!-- Mobile Menu -->
     <div id="mobile-menu" class="md:hidden px-6 pb-4 border-t border-gray-100">
       <div class="flex flex-col gap-4 pt-4">
+        <a href="#problem" class="nav-link text-base">The Gap</a>
         <a href="#features" class="nav-link text-base">Platform</a>
         <a href="#businesses" class="nav-link text-base">Directory</a>
         <a href="#mentors" class="nav-link text-base">Mentors</a>
-        <a href="#resources" class="nav-link text-base">Resources</a>
-        <a href="#community" class="nav-link text-base">Community</a>
         <div class="flex gap-3 pt-2">
           <button onclick="toggleModal('loginModal', true)" class="btn-outline">Log In</button>
-          <a href="#" class="btn-primary">Join Free</a>
+          <button onclick="toggleModal('registerModal', true)" class="btn-primary">Join Free</button>
         </div>
       </div>
     </div>
   </nav>
 
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  HERO SECTION                              -->
-  <!-- ══════════════════════════════════════════ -->
+  <!-- ════════════════════════════════════════
+       HERO SECTION
+  ════════════════════════════════════════ -->
   <section class="hero-section" id="hero">
-    <div class="hero-bg-shape"></div>
-    <div class="hero-bg-circle"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
 
     <div class="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center relative z-10 w-full">
 
       <!-- Left: Text -->
       <div>
-        <div class="hero-badge fade-up">
-          <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#c9756c"/></svg>
-          Over 12,000 founders & growing
+        <div class="hero-problem-badge fade-up">
+          <div class="pulse-dot"></div>
+          The Access Gap — Solved
         </div>
 
         <h1 class="hero-title fade-up delay-1">
@@ -804,74 +1070,74 @@
           Together
         </h1>
 
-        <p class="text-gray-500 text-lg leading-relaxed mb-8 max-w-md fade-up delay-2">
-          EmpowHer Network is the professional ecosystem built exclusively for women entrepreneurs — 
-          connect, collaborate, and scale your vision with a community that understands your journey.
+        <p class="hero-problem-line">
+          Because talent is everywhere — but access isn't.
         </p>
 
-        <div class="flex flex-wrap gap-3 mb-12 fade-up delay-3">
-          <a href="#" class="btn-primary">Join the Network</a>
-          <a href="#features" class="btn-outline">Explore Platform</a>
+        <p class="hero-desc">
+          Women entrepreneurs face a structural access gap: too few mentors nearby, too little
+          visibility to investors, too much noise to find relevant funding. EmpowHer puts
+          mentors, investors, and live grant opportunities within arm's reach — in one place.
+        </p>
+
+        <div class="flex flex-wrap gap-3 mb-10 fade-up delay-2">
+          <button onclick="toggleModal('registerModal', true)" class="btn-primary" style="padding:0.75rem 2rem;font-size:0.9rem;">Join Free — Close the Gap</button>
+          <a href="#problem" class="btn-outline" style="padding:0.75rem 1.6rem;">See the Problem →</a>
         </div>
 
-        <!-- Stats row -->
-        <div class="flex gap-8 fade-up delay-4">
-          <div class="hero-stat">
-            <div class="num">12K+</div>
-            <div class="label">Founders</div>
+        <!-- Animated stat cards -->
+        <div class="flex gap-4 flex-wrap fade-up delay-3">
+          <div class="stat-card">
+            <div class="stat-num" data-target="12000" data-suffix="K+">0</div>
+            <div class="stat-label">Founders</div>
           </div>
-          <div class="w-px bg-gray-200"></div>
-          <div class="hero-stat">
-            <div class="num">340+</div>
-            <div class="label">Mentors</div>
+          <div class="stat-card">
+            <div class="stat-num" data-target="340" data-suffix="+">0</div>
+            <div class="stat-label">Mentors</div>
           </div>
-          <div class="w-px bg-gray-200"></div>
-          <div class="hero-stat">
-            <div class="num">2.1M</div>
-            <div class="label">Grants Accessed</div>
+          <div class="stat-card">
+            <div class="stat-num" data-target="200" data-suffix="+">0</div>
+            <div class="stat-label">Live Grants</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" data-target="21" data-suffix="M+">0</div>
+            <div class="stat-label">Funding Accessed</div>
           </div>
         </div>
       </div>
 
-      <!-- Right: Superwoman Photo -->
-      <div class="relative hidden md:flex fade-up delay-3 flex-col items-center justify-center" style="min-height:540px;">
+      <!-- Right: Photo + floating cards -->
+      <div class="hero-visual hidden md:block fade-up delay-2" style="position:relative;">
 
-        <!-- Blush background blob behind photo -->
         <div style="position:absolute;inset:0;background:linear-gradient(145deg,#e8c5b0 0%,#f5ddd0 50%,#faf6f1 100%);border-radius:24px;z-index:0;"></div>
-
-        <!-- Photo frame — tall rounded rectangle like screenshot -->
-        <div style="position:relative;z-index:2;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:1.5rem 1.5rem 0;">
-
+     
+        <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;padding:1.5rem 1.5rem 0;">
           <img
             src="superwomen.png"
-            alt="Professional woman founder — she does it all"
-            style="width:88%;max-width:600px;height:660px;object-fit:cover;object-position:top center;border-radius:16px 16px 0 0;box-shadow:0 -8px 40px rgba(125,46,46,0.12);display:block;"
+            alt="Professional woman founder"
+            style="width:88%;max-width:600px;height:580px;object-fit:cover;object-position:top center;border-radius:16px 16px 0 0;box-shadow:0 -8px 40px rgba(125,46,46,0.14);display:block;"
             onerror="this.src='https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&q=90&fit=crop&crop=top'"
           />
         </div>
 
-        <!-- Caption bar pinned to bottom of blob -->
-        <div style="position:absolute;bottom:0;left:0;right:0;z-index:3;background:rgba(125,46,46,0.82);backdrop-filter:blur(8px);border-radius:0 0 24px 24px;padding:0.9rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:12px;">
+        <div style="position:absolute;bottom:0;left:0;right:0;z-index:3;background:rgba(125,46,46,0.85);backdrop-filter:blur(8px);border-radius:0 0 24px 24px;padding:0.9rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:12px;">
           <div style="height:1px;flex:1;background:rgba(255,255,255,0.25);"></div>
           <div style="text-align:center;">
-            <p style="font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;color:#fff;letter-spacing:0.02em;margin:0;">She Does It All</p>
+            <p style="font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;color:#fff;margin:0;">She Does It All</p>
             <p style="font-size:0.68rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.65);margin:2px 0 0;">Founder · Creator · Leader · Human</p>
           </div>
           <div style="height:1px;flex:1;background:rgba(255,255,255,0.25);"></div>
         </div>
-
       </div>
     </div>
   </section>
 
-
-  <!-- ══════════════════════════════════════════ -->
-  <!--  MARQUEE / TRUST BAR                       -->
-  <!-- ══════════════════════════════════════════ -->
-  <section style="background:#fff; border-top:1px solid rgba(0,0,0,0.06); border-bottom:1px solid rgba(0,0,0,0.06); padding:1.1rem 0; overflow:hidden;">
+  <!-- ════════════════════════════════════════
+       MARQUEE
+  ════════════════════════════════════════ -->
+  <section style="background:#fff;border-top:1px solid rgba(0,0,0,0.06);border-bottom:1px solid rgba(0,0,0,0.06);padding:1rem 0;overflow:hidden;">
     <div style="overflow:hidden;">
       <div class="marquee-track">
-        <!-- Repeat twice for seamless loop -->
         <span style="color:#bbb;font-size:0.78rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Forbes Women</span>
         <span style="color:rgba(201,117,108,0.4);">◆</span>
         <span style="color:#bbb;font-size:0.78rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Y Combinator Backed</span>
@@ -884,7 +1150,6 @@
         <span style="color:rgba(201,117,108,0.4);">◆</span>
         <span style="color:#bbb;font-size:0.78rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">IFC Women Entrepreneurs</span>
         <span style="color:rgba(201,117,108,0.4);">◆</span>
-        <!-- Duplicate -->
         <span style="color:#bbb;font-size:0.78rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Forbes Women</span>
         <span style="color:rgba(201,117,108,0.4);">◆</span>
         <span style="color:#bbb;font-size:0.78rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Y Combinator Backed</span>
@@ -902,353 +1167,372 @@
   </section>
 
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  FEATURES SECTION                          -->
-  <!-- ══════════════════════════════════════════ -->
-  <section id="features" style="padding:6rem 0; background:var(--cream);">
-    <div class="max-w-7xl mx-auto px-6">
+  <!-- ════════════════════════════════════════
+       PROBLEM SECTION
+  ════════════════════════════════════════ -->
+  <section id="problem" class="problem-section">
+    <div class="max-w-7xl mx-auto px-6 relative z-10">
+      <div class="text-center mb-14 reveal">
+        <p class="section-eyebrow" style="color:rgba(201,117,108,0.8);">The Problem We're Solving</p>
+        <h2 class="section-title" style="color:#fff;">The Access Gap Is Real.<br/>And We're Closing It.</h2>
+        <p style="color:rgba(255,255,255,0.5);max-width:520px;margin:1rem auto 0;line-height:1.7;">
+          Women founders are building world-changing companies — but they're doing it with fewer introductions,
+          less capital, and less community. That's not a capability gap. That's a structural access gap.
+        </p>
+      </div>
 
-      <div class="text-center mb-14">
+      <div class="grid md:grid-cols-3 gap-px reveal" style="background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden;">
+        <div style="background:var(--charcoal);padding:2.5rem 2rem;text-align:center;">
+          <div class="problem-stat-big" data-counter="73" data-suffix="%">0%</div>
+          <p class="problem-stat-label">of women founders report difficulty finding relevant mentors in their sector and city</p>
+        </div>
+        <div style="background:var(--charcoal);padding:2.5rem 2rem;text-align:center;border-left:1px solid rgba(255,255,255,0.06);border-right:1px solid rgba(255,255,255,0.06);">
+          <div class="problem-stat-big" style="color:var(--gold);" data-counter="2" data-suffix="%">0%</div>
+          <p class="problem-stat-label">of total VC funding reaches women-only founded startups globally (2023)</p>
+        </div>
+        <div style="background:var(--charcoal);padding:2.5rem 2rem;text-align:center;">
+          <div class="problem-stat-big" style="color:var(--blush);" data-counter="48" data-suffix="hrs">0hrs</div>
+          <p class="problem-stat-label">average time a founder spends searching for a relevant grant — before giving up</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-12 reveal">
+        <p style="color:rgba(255,255,255,0.45);font-size:0.85rem;margin-bottom:1.5rem;">EmpowHer addresses all three — in one place, free forever.</p>
+        <button onclick="toggleModal('registerModal', true)" class="btn-cta">Close the Gap — Join Free</button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ════════════════════════════════════════
+       FEATURES
+  ════════════════════════════════════════ -->
+  <section id="features" style="padding:6rem 0;background:var(--cream);">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-14 reveal">
         <p class="section-eyebrow">Everything You Need</p>
-        <h2 class="section-title">Built for the Modern<br/> Woman Founder</h2>
-        <p style="color:#888; font-size:1rem; max-width:480px; margin:1rem auto 0;">
-          From day one to Series C — EmpowHer grows with you.
+        <h2 class="section-title">Built to Bridge<br/>the Access Gap</h2>
+        <p style="color:#888;font-size:1rem;max-width:480px;margin:1rem auto 0;">
+          Three barriers. One platform. Mentors, funding, and peer discovery — all in arm's reach.
         </p>
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        <!-- Feature 1 -->
-        <article style="padding:2rem; background:#fff; border-radius:4px; border:1px solid rgba(0,0,0,0.06);">
-          <div class="feature-icon-wrap mb-4" style="background:rgba(201,117,108,0.1);">
-            <span>🗂️</span>
-          </div>
-          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Business Directory</h3>
-          <p style="font-size:0.875rem; color:#777; line-height:1.6;">
-            A curated, searchable directory of women-owned businesses across 50+ industries and 90 countries.
-          </p>
+        <article class="feature-card reveal">
+          <div class="feature-icon-wrap" style="background:rgba(201,117,108,0.1);">🗂️</div>
+          <h3 style="font-size:1.15rem;margin-bottom:0.5rem;">Business Directory</h3>
+          <p style="font-size:0.875rem;color:#777;line-height:1.6;">A curated, searchable directory of women-owned businesses across 50+ industries and 90 countries.</p>
         </article>
 
-        <!-- Feature 2 -->
-        <article style="padding:2rem; background:#fff; border-radius:4px; border:1px solid rgba(0,0,0,0.06);">
-          <div class="feature-icon-wrap mb-4" style="background:rgba(45,74,62,0.1);">
-            <span>🤝</span>
-          </div>
-          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Mentor Matching</h3>
-          <p style="font-size:0.875rem; color:#777; line-height:1.6;">
-            Get matched with experienced mentors who've navigated the exact stage and industry you're in.
-          </p>
+        <article class="feature-card reveal">
+          <div class="feature-icon-wrap" style="background:rgba(45,74,62,0.1);">🤝</div>
+          <h3 style="font-size:1.15rem;margin-bottom:0.5rem;">Proximity-Based Mentor Matching</h3>
+          <p style="font-size:0.875rem;color:#777;line-height:1.6;">Matched by sector <em>and</em> city — because a mentor in your time zone changes everything.</p>
         </article>
 
-        <!-- Feature 3 -->
-        <article style="padding:2rem; background:#fff; border-radius:4px; border:1px solid rgba(0,0,0,0.06);">
-          <div class="feature-icon-wrap mb-4" style="background:rgba(201,168,76,0.1);">
-            <span>💰</span>
-          </div>
-          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Grants & Funding Hub</h3>
-          <p style="font-size:0.875rem; color:#777; line-height:1.6;">
-            Browse 200+ live grant opportunities filtered by sector, region, and funding stage — updated weekly.
-          </p>
+        <article class="feature-card reveal">
+          <div class="feature-icon-wrap" style="background:rgba(201,168,76,0.1);">💰</div>
+          <h3 style="font-size:1.15rem;margin-bottom:0.5rem;">Live Grants & Funding Hub</h3>
+          <p style="font-size:0.875rem;color:#777;line-height:1.6;">200+ live grants filtered by sector, region, and stage. Updated weekly. No more 48-hour grant hunts.</p>
         </article>
 
-        <!-- Feature 4 -->
-        <article style="padding:2rem; background:#fff; border-radius:4px; border:1px solid rgba(0,0,0,0.06);">
-          <div class="feature-icon-wrap mb-4" style="background:rgba(201,117,108,0.08);">
-            <span>📅</span>
-          </div>
-          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Events & Pitch Nights</h3>
-          <p style="font-size:0.875rem; color:#777; line-height:1.6;">
-            Virtual and in-person events — from masterclasses to investor pitch nights — hosted every week.
-          </p>
+        <article class="feature-card reveal">
+          <div class="feature-icon-wrap" style="background:rgba(201,117,108,0.08);">📅</div>
+          <h3 style="font-size:1.15rem;margin-bottom:0.5rem;">Events & Pitch Nights</h3>
+          <p style="font-size:0.875rem;color:#777;line-height:1.6;">Virtual and in-person events — from masterclasses to investor pitch nights — hosted every week.</p>
         </article>
 
-        <!-- Feature 5 -->
-        <article style="padding:2rem; background:#fff; border-radius:4px; border:1px solid rgba(0,0,0,0.06);">
-          <div class="feature-icon-wrap mb-4" style="background:rgba(125,46,46,0.08);">
-            <span>💬</span>
-          </div>
-          <h3 style="font-size:1.15rem; margin-bottom:0.5rem;">Community Forums</h3>
-          <p style="font-size:0.875rem; color:#777; line-height:1.6;">
-            Ask questions, share wins, and get real answers from 12,000+ founders who've been there.
-          </p>
+        <article class="feature-card reveal">
+          <div class="feature-icon-wrap" style="background:rgba(125,46,46,0.08);">💬</div>
+          <h3 style="font-size:1.15rem;margin-bottom:0.5rem;">Community Forums</h3>
+          <p style="font-size:0.875rem;color:#777;line-height:1.6;">Ask questions, share wins, and get real answers from 12,000+ founders who've been there.</p>
         </article>
 
-        <!-- Feature 6 -->
-        <article style="padding:2rem; background:var(--burgundy); border-radius:4px; border:1px solid transparent;">
-          <div class="feature-icon-wrap mb-4" style="background:rgba(255,255,255,0.12);">
-            <span>📊</span>
-          </div>
-          <h3 style="font-size:1.15rem; margin-bottom:0.5rem; color:#fff;">Analytics Dashboard</h3>
-          <p style="font-size:0.875rem; color:rgba(255,255,255,0.65); line-height:1.6;">
-            Track your growth milestones, connection requests, and funding applications all in one place.
-          </p>
+        <article class="feature-card reveal" style="background:var(--burgundy);border-color:transparent;">
+          <div class="feature-icon-wrap" style="background:rgba(255,255,255,0.12);">📊</div>
+          <h3 style="font-size:1.15rem;margin-bottom:0.5rem;color:#fff;">Analytics Dashboard</h3>
+          <p style="font-size:0.875rem;color:rgba(255,255,255,0.65);line-height:1.6;">Track your growth milestones, connection requests, and funding applications — all in one view.</p>
         </article>
 
       </div>
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  BUSINESS DIRECTORY CARDS                  -->
-  <!-- ══════════════════════════════════════════ -->
-  <section id="businesses" style="padding:6rem 0; background:#fff;">
+
+  <!-- ════════════════════════════════════════
+       BUSINESS DIRECTORY
+  ════════════════════════════════════════ -->
+  <section id="businesses" style="padding:6rem 0;background:#fff;">
     <div class="max-w-7xl mx-auto px-6">
 
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 reveal">
         <div>
           <p class="section-eyebrow">Featured Businesses</p>
           <h2 class="section-title">Women-Led Ventures<br/>Making Waves</h2>
         </div>
-        <div class="flex flex-wrap gap-3 items-center">
-          <button id="near-me-btn" onclick="findNearMeBusinesses()" class="btn-outline" style="white-space:nowrap;">📍 Founders Near Me</button>
-          <select id="city-fallback" class="hidden btn-outline" onchange="useFallbackCity()" style="white-space:nowrap;cursor:pointer;">
-            <option value="">Choose your city…</option>
+        <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
+          <button id="near-me-btn" onclick="findNearMeBusinesses()" class="btn-outline" style="white-space:nowrap;font-size:0.78rem;padding:0.45rem 1rem;">📍 Near Me</button>
+          <select id="city-fallback" class="hidden filter-select" onchange="useFallbackCity()" style="font-size:0.78rem;">
+            <option value="">Choose city…</option>
             <option value="12.9716,77.5946">Bengaluru</option>
             <option value="19.0760,72.8777">Mumbai</option>
             <option value="28.6139,77.2090">New Delhi</option>
             <option value="17.3850,78.4867">Hyderabad</option>
             <option value="13.0827,80.2707">Chennai</option>
             <option value="22.5726,88.3639">Kolkata</option>
-            <option value="18.5204,73.8567">Pune</option>
-          </select>          <div class="voice-search-wrap" role="search">
-            <input id="voice-search-input" type="search" placeholder="Search founder, city, industry" aria-label="Search business directory" oninput="filterBusinesses(this.value)" />
-            <button id="voice-search-btn" class="voice-btn" type="button" onclick="startVoiceSearch()" aria-label="Search by voice" title="Search by voice">Mic</button>
-          </div>
-          <button id="fav-filter-btn" onclick="toggleFavoritesFilter()" class="btn-outline" style="white-space:nowrap;">☆ My Favorites</button>
-          <a href="#" class="btn-outline" style="white-space:nowrap;">View Full Directory →</a>
+          </select>
+          <button id="fav-filter-btn" onclick="toggleFavoritesFilter()" class="btn-outline" style="white-space:nowrap;font-size:0.78rem;padding:0.45rem 1rem;">☆ Saved</button>
+          <a href="#" class="btn-outline" style="white-space:nowrap;font-size:0.78rem;padding:0.45rem 1rem;">Full Directory →</a>
         </div>
       </div>
 
+      <!-- ════ FILTER BAR — JS Event 4 (Change) lives here ════ -->
+      <div class="filter-bar reveal">
+        <span class="filter-label">Filter by:</span>
+
+        <!-- JS EVENT 4 — Change Event: updates result count label dynamically -->
+        <select id="sector-filter" class="filter-select" onchange="handleSectorChange(this)" title="Filter by industry sector">
+          <option value="all">All Sectors</option>
+          <option value="edtech">EdTech</option>
+          <option value="cleantech">CleanTech</option>
+          <option value="healthtech">HealthTech</option>
+          <option value="fintech">FinTech</option>
+          <option value="fashiontech">FashionTech</option>
+          <option value="ecommerce">E-Commerce</option>
+          <option value="biotech">BioTech</option>
+        </select>
+
+        <select id="stage-filter" class="filter-select" onchange="handleStageChange(this)" title="Filter by funding stage">
+          <option value="all">All Stages</option>
+          <option value="pre-seed">Pre-seed</option>
+          <option value="seed">Seed</option>
+          <option value="series-a">Series A</option>
+          <option value="series-b">Series B+</option>
+        </select>
+
+        <div class="voice-search-wrap" style="flex:1;min-width:160px;">
+          <input id="voice-search-input" type="search" placeholder="Search founder, city, industry…" aria-label="Search directory" oninput="filterBySearch(this.value)" />
+          <button id="voice-search-btn" class="voice-btn" onclick="startVoiceSearch()" aria-label="Voice search" title="Search by voice" style="font-size:0.65rem;">MIC</button>
+        </div>
+
+        <!-- Dynamic result label (updated by Change Event) -->
+        <span class="filter-result-tag" id="filter-result-tag">
+          Showing all 10 founders
+        </span>
+      </div>
+
+      <!-- Cards Grid -->
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="businesses-grid">
 
-        <!-- Card 1 -->
-        <article class="biz-card" data-id="biz-aisha" data-lat="6.5244" data-lng="3.3792">
+        <!-- Card 1 — Aisha -->
+        <article class="biz-card reveal" data-id="biz-aisha" data-lat="6.5244" data-lng="3.3792" data-sector="edtech" data-stage="seed">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#c9756c,#e8a89e);"></div>
-          <button class="fav-btn" data-id="biz-aisha" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-aisha" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#c9756c,#7d2e2e);">A</div>
               <span class="tag">EdTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Aisha Okonkwo</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Aisha Okonkwo</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">EduBridge Africa · Lagos, Nigeria</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              Bridging the digital education gap across Sub-Saharan Africa with offline-first learning tools.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">Bridging the digital education gap across Sub-Saharan Africa with offline-first learning tools.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Seed · 180K raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Seed · $180K raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 2 -->
-        <article class="biz-card" data-id="biz-maya" data-lat="19.0760" data-lng="72.8777">
+        <!-- Card 2 — Maya -->
+        <article class="biz-card reveal" data-id="biz-maya" data-lat="19.0760" data-lng="72.8777" data-sector="cleantech" data-stage="series-a">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#2d4a3e,#4a7c65);"></div>
-          <button class="fav-btn" data-id="biz-maya" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-maya" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#2d4a3e,#4a7c65);">M</div>
               <span class="tag" style="background:rgba(45,74,62,0.1);color:#2d4a3e;">CleanTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Maya Patel</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Maya Patel</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">SolarSis · Mumbai, India</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              Delivering affordable rooftop solar solutions to underserved communities across South Asia.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">Delivering affordable rooftop solar to underserved communities across South Asia.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Series A · 2.4M raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Series A · ₹2.4Cr raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 3 -->
-        <article class="biz-card" data-id="biz-sofia" data-lat="19.4326" data-lng="-99.1332">
+        <!-- Card 3 — Sofia -->
+        <article class="biz-card reveal" data-id="biz-sofia" data-lat="19.4326" data-lng="-99.1332" data-sector="healthtech" data-stage="pre-seed">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#c9a84c,#e0ba5c);"></div>
-          <button class="fav-btn" data-id="biz-sofia" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-sofia" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#c9a84c,#a0803a);">S</div>
               <span class="tag" style="background:rgba(201,168,76,0.1);color:#a0803a;">HealthTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Sofia Reyes</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Sofia Reyes</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">MadreMed · Mexico City, MX</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              Maternal health platform providing remote prenatal care and mental health support to rural mothers.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">Maternal health platform providing remote prenatal care and mental health support to rural mothers.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Pre-seed · 60K raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Pre-seed · $60K raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 4 -->
-        <article class="biz-card" data-id="biz-rina" data-lat="35.6762" data-lng="139.6503">
+        <!-- Card 4 — Rina -->
+        <article class="biz-card reveal" data-id="biz-rina" data-lat="35.6762" data-lng="139.6503" data-sector="fashiontech" data-stage="seed">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#9b6b9b,#c499c4);"></div>
-          <button class="fav-btn" data-id="biz-rina" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-rina" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#9b6b9b,#7a4a7a);">R</div>
               <span class="tag" style="background:rgba(155,107,155,0.1);color:#7a4a7a;">FashionTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Rina Tanaka</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Rina Tanaka</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">ThreadLoop · Tokyo, Japan</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              Circular fashion marketplace that makes sustainable style accessible and profitable for independent designers.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">Circular fashion marketplace making sustainable style accessible for independent designers.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Seed · 320K raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Seed · $320K raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 5 -->
-        <article class="biz-card" data-id="biz-lena" data-lat="52.5200" data-lng="13.4050">
+        <!-- Card 5 — Lena -->
+        <article class="biz-card reveal" data-id="biz-lena" data-lat="52.5200" data-lng="13.4050" data-sector="fintech" data-stage="series-a">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#4a6fa5,#7098c9);"></div>
-          <button class="fav-btn" data-id="biz-lena" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-lena" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#4a6fa5,#2d4f7a);">L</div>
               <span class="tag" style="background:rgba(74,111,165,0.1);color:#2d4f7a;">FinTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Lena Müller</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Lena Müller</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">FairFund · Berlin, Germany</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              AI-driven micro-lending platform designed specifically for early-stage women-owned small businesses.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">AI-driven micro-lending designed specifically for early-stage women-owned businesses.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Series A · 5.1M raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Series A · €5.1M raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 6 — Ananya Sharma (New Delhi) -->
-        <article class="biz-card" data-id="biz-ananya" data-lat="28.6139" data-lng="77.2090">
+        <!-- Card 6 — Ananya -->
+        <article class="biz-card reveal" data-id="biz-ananya" data-lat="28.6139" data-lng="77.2090" data-sector="fintech" data-stage="seed">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#e07856,#f0a87e);"></div>
-          <button class="fav-btn" data-id="biz-ananya" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-ananya" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#e07856,#b9502f);">A</div>
               <span class="tag" style="background:rgba(224,120,86,0.1);color:#b9502f;">FinTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Ananya Sharma</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Ananya Sharma</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">RupeeWise · New Delhi, India</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              A digital lending platform offering quick, collateral-free working capital loans to women-run micro and small businesses.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">Quick, collateral-free working capital loans to women-run micro and small businesses.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Seed · ₹2.5 Cr raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Seed · ₹2.5Cr raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 7 — Diya Iyer (Bengaluru) -->
-        <article class="biz-card" data-id="biz-diya" data-lat="12.9716" data-lng="77.5946">
+        <!-- Card 7 — Diya -->
+        <article class="biz-card reveal" data-id="biz-diya" data-lat="12.9716" data-lng="77.5946" data-sector="ecommerce" data-stage="series-a">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#3f7d5a,#6fb594);"></div>
-          <button class="fav-btn" data-id="biz-diya" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-diya" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#3f7d5a,#2a5640);">D</div>
               <span class="tag" style="background:rgba(63,125,90,0.1);color:#2a5640;">E-Commerce</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Diya Iyer</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Diya Iyer</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">GreenCart · Bengaluru, India</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              A marketplace connecting eco-conscious shoppers with sustainable, locally-made household and personal care products.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">Connecting eco-conscious shoppers with sustainable, locally-made household products.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Series A · ₹8 Cr raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Series A · ₹8Cr raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 8 — Kavitha Murthy (Hyderabad) -->
-        <article class="biz-card" data-id="biz-kavitha" data-lat="17.3850" data-lng="78.4867">
+        <!-- Card 8 — Kavitha -->
+        <article class="biz-card reveal" data-id="biz-kavitha" data-lat="17.3850" data-lng="78.4867" data-sector="healthtech" data-stage="pre-seed">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#c9a84c,#a0803a);"></div>
-          <button class="fav-btn" data-id="biz-kavitha" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-kavitha" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#c9a84c,#8a6a2a);">K</div>
               <span class="tag" style="background:rgba(201,168,76,0.1);color:#8a6a2a;">HealthTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Kavitha Murthy</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Kavitha Murthy</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">HealWell · Hyderabad, India</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              An at-home diagnostics and teleconsultation service bringing affordable preventive healthcare to tier-2 and tier-3 towns.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">At-home diagnostics bringing affordable preventive healthcare to tier-2 and tier-3 towns.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Pre-seed · ₹85 Lakhs raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Pre-seed · ₹85L raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 9 — Kiran Mazumdar (Bengaluru) -->
-        <article class="biz-card" data-id="biz-kiran" data-lat="12.9352" data-lng="77.6245">
+        <!-- Card 9 — Kiran -->
+        <article class="biz-card reveal" data-id="biz-kiran" data-lat="12.9352" data-lng="77.6245" data-sector="biotech" data-stage="series-b">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#7d2e2e,#c9756c);"></div>
-          <button class="fav-btn" data-id="biz-kiran" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-kiran" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#7d2e2e,#c9756c);">K</div>
               <span class="tag" style="background:rgba(125,46,46,0.08);color:#7d2e2e;">BioTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Kiran Mazumdar-Shaw</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Kiran Mazumdar-Shaw</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">BioNova · Bengaluru, India</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              Develops affordable biosimilar therapies and diagnostic kits aimed at expanding access to chronic disease care across India.
-            </p>
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Series B · ₹15 Cr raised</span>
-              <div style="display:flex;gap:0.55rem;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
-                <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
-                <button type="button" onclick="requestKiranMentorship(event)" class="btn-outline" style="font-size:0.72rem;padding:0.3rem 0.7rem;white-space:nowrap;">Request Mentor</button>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">Affordable biosimilar therapies and diagnostic kits for chronic disease care across India.</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
+              <span style="font-size:0.75rem;color:#aaa;">Series B · ₹15Cr raised</span>
+              <div style="display:flex;gap:0.5rem;align-items:center;">
+                <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+                <button onclick="requestMentorship(event,'Kiran')" class="btn-outline" style="font-size:0.7rem;padding:0.28rem 0.65rem;">Mentor</button>
               </div>
             </div>
           </div>
         </article>
 
-        <!-- Card 10 — Neha Williams (Mumbai) -->
-        <article class="biz-card" data-id="biz-neha" data-lat="19.0760" data-lng="72.8777">
+        <!-- Card 10 — Neha -->
+        <article class="biz-card reveal" data-id="biz-neha" data-lat="19.0760" data-lng="72.8777" data-sector="fashiontech" data-stage="seed">
           <div class="biz-card-accent" style="background:linear-gradient(90deg,#9b6b9b,#7a4a7a);"></div>
-          <button class="fav-btn" data-id="biz-neha" onclick="toggleFavorite(this)" aria-label="Save venture">☆</button>
+          <button class="fav-btn" data-id="biz-neha" onclick="toggleFavorite(this)" aria-label="Save">☆</button>
           <div style="padding:1.5rem;">
             <div class="distance-tag hidden"></div>
-            <div class="flex justify-between items-start mb-4">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
               <div class="avatar-ring" style="background:linear-gradient(135deg,#9b6b9b,#5e3a5e);">N</div>
               <span class="tag" style="background:rgba(155,107,155,0.1);color:#5e3a5e;">FashionTech</span>
             </div>
-            <h3 style="font-size:1.05rem; margin-bottom:0.25rem;">Neha Williams</h3>
+            <h3 style="font-size:1.05rem;margin-bottom:0.25rem;">Neha Williams</h3>
             <p style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;">StyleLoop · Mumbai, India</p>
-            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">
-              A direct-to-consumer fashion rental and resale platform helping young professionals dress sustainably on a budget.
-            </p>
+            <p style="font-size:0.85rem;color:#666;line-height:1.55;margin-bottom:1rem;">Fashion rental and resale helping young professionals dress sustainably on a budget.</p>
             <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid rgba(0,0,0,0.06);">
-              <span style="font-size:0.75rem;color:#aaa;">Seed · ₹3.2 Cr raised</span>
-              <a href="#" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
+              <span style="font-size:0.75rem;color:#aaa;">Seed · ₹3.2Cr raised</span>
+              <a href="#" class="connect-link" style="font-size:0.78rem;font-weight:600;color:var(--rose);text-decoration:none;">Connect →</a>
             </div>
           </div>
         </article>
 
-        <!-- Card 11 — CTA card -->
-        <article class="cta-list-card" style="background:var(--cream);border:1.5px dashed rgba(201,117,108,0.3);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;min-height:260px;">
+        <!-- CTA card -->
+        <article style="background:var(--cream);border:1.5px dashed rgba(201,117,108,0.3);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;min-height:260px;" class="reveal cta-list-card">
           <div style="width:48px;height:48px;background:rgba(201,117,108,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;">+</div>
           <h3 style="font-size:1rem;color:var(--burgundy);margin-bottom:0.5rem;">List Your Business</h3>
-          <p style="font-size:0.82rem;color:#aaa;margin-bottom:1.2rem;line-height:1.5;">Join 12,000+ founders and get discovered by investors and collaborators.</p>
+          <p style="font-size:0.82rem;color:#aaa;margin-bottom:1.2rem;line-height:1.5;">Join 12,000+ founders. Get discovered by investors and collaborators.</p>
           <button onclick="toggleModal('registerModal', true)" class="btn-primary" style="font-size:0.78rem;padding:0.4rem 1.1rem;">Register Free</button>
         </article>
 
@@ -1257,65 +1541,71 @@
   </section>
 
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  MENTORS SECTION                           -->
-  <!-- ══════════════════════════════════════════ -->
-  <section id="mentors" style="padding:6rem 0; background:var(--cream);">
+  <!-- ════════════════════════════════════════
+       MENTORS
+  ════════════════════════════════════════ -->
+  <section id="mentors" style="padding:6rem 0;background:var(--cream);">
     <div class="max-w-7xl mx-auto px-6">
-
-      <div class="text-center mb-12">
+      <div class="text-center mb-12 reveal">
         <p class="section-eyebrow">Community Mentors</p>
-        <h2 class="section-title">Learn From Founders<br/>Who've Done It</h2>
+        <h2 class="section-title">The Access You<br/>Deserve — Near You</h2>
+        <p style="color:#888;font-size:0.9rem;max-width:440px;margin:0.75rem auto 0;">
+          Mentors matched by sector <em>and</em> geography — because proximity accelerates everything.
+        </p>
       </div>
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
-        <div class="mentor-card text-center">
+        <div class="mentor-card reveal">
           <div class="avatar-ring mx-auto mb-3" style="background:linear-gradient(135deg,#c9756c,#7d2e2e);width:60px;height:60px;font-size:1.4rem;">D</div>
-          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;">Dr. Diana Yates</h4>
-          <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;">Health Ventures · Ex-FDA</p>
-          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;">Specialises in navigating regulatory pathways for health and biotech startups.</p>
+          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;text-align:center;">Dr. Diana Yates</h4>
+          <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;text-align:center;">Health Ventures · Ex-FDA</p>
+          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;text-align:center;">Navigating regulatory pathways for health and biotech startups.</p>
           <div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:1rem;">
-            <span class="tag">HealthTech</span>
-            <span class="tag">Regulatory</span>
+            <span class="tag">HealthTech</span><span class="tag">Regulatory</span>
           </div>
-          <a href="#" class="btn-outline" style="font-size:0.75rem;padding:0.35rem 1rem;">Request Mentor</a>
+          <div style="text-align:center;">
+            <button onclick="requestMentorship(event,'Dr. Diana Yates')" class="btn-outline" style="font-size:0.75rem;padding:0.35rem 1rem;">Request Mentor</button>
+          </div>
         </div>
 
-        <div class="mentor-card text-center">
+        <div class="mentor-card reveal">
           <div class="avatar-ring mx-auto mb-3" style="background:linear-gradient(135deg,#2d4a3e,#4a7c65);width:60px;height:60px;font-size:1.4rem;">P</div>
-          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;">Priya Nair</h4>
-          <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;">Growth · Ex-Google</p>
-          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;">10 years scaling consumer products from 0 to millions across Asia-Pacific markets.</p>
+          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;text-align:center;">Priya Nair</h4>
+          <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;text-align:center;">Growth · Ex-Google</p>
+          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;text-align:center;">Scaling consumer products from 0 to millions across Asia-Pacific.</p>
           <div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:1rem;">
-            <span class="tag">Growth</span>
-            <span class="tag">B2C</span>
+            <span class="tag">Growth</span><span class="tag">B2C</span>
           </div>
-          <a href="#" class="btn-outline" style="font-size:0.75rem;padding:0.35rem 1rem;">Request Mentor</a>
+          <div style="text-align:center;">
+            <button onclick="requestMentorship(event,'Priya Nair')" class="btn-outline" style="font-size:0.75rem;padding:0.35rem 1rem;">Request Mentor</button>
+          </div>
         </div>
 
-        <div class="mentor-card text-center">
+        <div class="mentor-card reveal">
           <div class="avatar-ring mx-auto mb-3" style="background:linear-gradient(135deg,#c9a84c,#a0803a);width:60px;height:60px;font-size:1.4rem;">J</div>
-          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;">Jessica Park</h4>
-          <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;">VC Partner · Sequoia</p>
-          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;">Has backed 30+ women-led startups and specialises in early-stage fundraising strategy.</p>
+          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;text-align:center;">Jessica Park</h4>
+          <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;text-align:center;">VC Partner · Sequoia</p>
+          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;text-align:center;">Backed 30+ women-led startups. Specialises in early-stage fundraising.</p>
           <div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:1rem;">
-            <span class="tag">Fundraising</span>
-            <span class="tag">Pitch</span>
+            <span class="tag">Fundraising</span><span class="tag">Pitch</span>
           </div>
-          <a href="#" class="btn-outline" style="font-size:0.75rem;padding:0.35rem 1rem;">Request Mentor</a>
+          <div style="text-align:center;">
+            <button onclick="requestMentorship(event,'Jessica Park')" class="btn-outline" style="font-size:0.75rem;padding:0.35rem 1rem;">Request Mentor</button>
+          </div>
         </div>
 
-        <div class="mentor-card text-center">
+        <div class="mentor-card reveal">
           <div class="avatar-ring mx-auto mb-3" style="background:linear-gradient(135deg,#4a6fa5,#2d4f7a);width:60px;height:60px;font-size:1.4rem;">F</div>
-          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;">Fatima Al-Hassan</h4>
-          <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;">Scale-up · MENA Markets</p>
-          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;">Bootstrapped and scaled two companies to 10M+ ARR in the Gulf and North African markets.</p>
+          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:2px;text-align:center;">Fatima Al-Hassan</h4>
+          <p style="font-size:0.75rem;color:var(--rose);font-weight:600;margin-bottom:0.5rem;text-align:center;">Scale-up · MENA Markets</p>
+          <p style="font-size:0.78rem;color:#888;line-height:1.5;margin-bottom:1rem;text-align:center;">Bootstrapped two companies to 10M+ ARR in Gulf and North African markets.</p>
           <div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-bottom:1rem;">
-            <span class="tag">MENA</span>
-            <span class="tag">Scale-up</span>
+            <span class="tag">MENA</span><span class="tag">Scale-up</span>
           </div>
-          <a href="#" class="btn-outline" style="font-size:0.75rem;padding:0.35rem 1rem;">Request Mentor</a>
+          <div style="text-align:center;">
+            <button onclick="requestMentorship(event,'Fatima Al-Hassan')" class="btn-outline" style="font-size:0.75rem;padding:0.35rem 1rem;">Request Mentor</button>
+          </div>
         </div>
 
       </div>
@@ -1323,26 +1613,21 @@
   </section>
 
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  TESTIMONIAL / QUOTE                       -->
-  <!-- ══════════════════════════════════════════ -->
-  <section style="padding:5rem 0; background:#fff; border-top:1px solid rgba(0,0,0,0.05);">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-      <div class="ornament mb-8">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M5 8C5 5.79 6.79 4 9 4V6C7.9 6 7 6.9 7 8v1h2v5H5V8zm8 0c0-2.21 1.79-4 4-4v2c-1.1 0-2 .9-2 2v1h2v5h-4V8z" fill="#c9756c"/>
-        </svg>
-      </div>
-
+  <!-- ════════════════════════════════════════
+       TESTIMONIAL
+  ════════════════════════════════════════ -->
+  <section style="padding:5rem 0;background:#fff;border-top:1px solid rgba(0,0,0,0.05);">
+    <div class="max-w-4xl mx-auto px-6 text-center reveal">
+      <p style="font-size:3rem;color:var(--blush);font-family:'Playfair Display',serif;line-height:1;margin-bottom:1.5rem;">"</p>
       <blockquote>
-        <p style="font-family:'Playfair Display',serif;font-size:clamp(1.25rem,3vw,1.9rem);line-height:1.5;color:var(--charcoal);font-style:italic;margin-bottom:2rem;">
-          "EmpowHer didn't just give me a network — it gave me a co-founder, a first investor, and the confidence 
-          to believe my idea was worth a billion dollars. Three years later, we're Series B."
+        <p style="font-family:'Playfair Display',serif;font-size:clamp(1.2rem,2.5vw,1.75rem);line-height:1.55;color:var(--charcoal);font-style:italic;margin-bottom:2rem;">
+          EmpowHer didn't just give me a network — it gave me a co-founder, a first investor, and the confidence
+          to believe my idea was worth a billion dollars. Three years later, we're Series B.
         </p>
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
           <div class="avatar-ring" style="background:linear-gradient(135deg,#c9756c,#7d2e2e);width:44px;height:44px;font-size:1rem;">N</div>
           <div style="text-align:left;">
-            <div style="font-weight:600;font-size:0.9rem;">Natasha Williams</div>
+            <div style="font-weight:700;font-size:0.9rem;">Natasha Williams</div>
             <div style="font-size:0.78rem;color:#888;">Founder & CEO, NovaSkin · Series B</div>
           </div>
         </div>
@@ -1351,43 +1636,38 @@
   </section>
 
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  CTA SECTION                               -->
-  <!-- ══════════════════════════════════════════ -->
-  <section class="cta-section" style="padding:6rem 0;">
-    <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
-      <p style="font-size:0.78rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Start Today — It's Free</p>
+  <!-- ════════════════════════════════════════
+       CTA
+  ════════════════════════════════════════ -->
+  <section class="cta-section" style="padding:6rem 0;" id="community">
+    <div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal">
+      <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:0.75rem;">Start Today — It's Free</p>
       <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.2rem);color:#fff;line-height:1.1;margin-bottom:1.5rem;">
-        Your Network Is<br/>
-        Your Net Worth
+        Your Network Is<br/>Your Net Worth
       </h2>
-      <p style="color:rgba(255,255,255,0.65);font-size:1rem;max-width:440px;margin:0 auto 2.5rem;">
-        Join 12,000 women founders building the future. Free forever — upgrade when you're ready to scale.
+      <p style="color:rgba(255,255,255,0.6);font-size:1rem;max-width:440px;margin:0 auto 2.5rem;line-height:1.7;">
+        Join 12,000 women founders building the future. Access mentors, funding, and community — free forever.
       </p>
       <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
-        <a href="#" class="btn-cta">Create Free Account</a>
-        <a href="#" style="color:rgba(255,255,255,0.7);font-size:0.85rem;font-weight:500;padding:0.8rem 1.5rem;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
-          Watch Platform Demo →
+        <button onclick="toggleModal('registerModal', true)" class="btn-cta">Create Free Account</button>
+        <a href="#features" style="color:rgba(255,255,255,0.65);font-size:0.85rem;font-weight:500;padding:0.85rem 1.5rem;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">
+          Explore Platform →
         </a>
       </div>
     </div>
   </section>
 
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  FOOTER                                    -->
-  <!-- ══════════════════════════════════════════ -->
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
   <footer style="padding:4rem 0 2rem;">
     <div class="max-w-7xl mx-auto px-6">
-
-      <!-- Top: Logo + Links Grid -->
       <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-10 mb-10">
-
-        <!-- Brand column -->
         <div class="lg:col-span-2">
           <div class="footer-logo mb-3">Empow<em style="font-style:italic;color:var(--rose);">Her</em></div>
           <p style="font-size:0.85rem;line-height:1.7;color:rgba(255,255,255,0.45);max-width:280px;margin-bottom:1.5rem;">
-            The professional ecosystem built exclusively for women entrepreneurs — from first idea to global scale.
+            Closing the access gap for women entrepreneurs — from first idea to global scale.
           </p>
           <div style="display:flex;gap:10px;">
             <a href="#" class="social-icon" aria-label="LinkedIn">in</a>
@@ -1397,7 +1677,6 @@
           </div>
         </div>
 
-        <!-- Platform -->
         <nav aria-label="Platform">
           <p class="footer-heading">Platform</p>
           <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.6rem;">
@@ -1409,7 +1688,6 @@
           </ul>
         </nav>
 
-        <!-- Resources -->
         <nav aria-label="Resources">
           <p class="footer-heading">Resources</p>
           <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.6rem;">
@@ -1421,7 +1699,6 @@
           </ul>
         </nav>
 
-        <!-- Company -->
         <nav aria-label="Company">
           <p class="footer-heading">Company</p>
           <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.6rem;">
@@ -1434,48 +1711,51 @@
         </nav>
       </div>
 
-      <!-- Divider -->
       <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:1.5rem;"></div>
 
-      <!-- Bottom bar -->
       <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <p style="font-size:0.78rem;color:rgba(255,255,255,0.3);">
-          © 2025 EmpowHer Network, Inc. All rights reserved.
-        </p>
+        <p style="font-size:0.78rem;color:rgba(255,255,255,0.3);">© 2025 EmpowHer Network, Inc. All rights reserved.</p>
         <div style="display:flex;gap:1.5rem;">
-          <a href="#" class="footer-link" style="font-size:0.78rem;">Privacy Policy</a>
-          <a href="#" class="footer-link" style="font-size:0.78rem;">Terms of Service</a>
-          <a href="#" class="footer-link" style="font-size:0.78rem;">Cookie Settings</a>
+          <a href="#" class="footer-link" style="font-size:0.78rem;">Privacy</a>
+          <a href="#" class="footer-link" style="font-size:0.78rem;">Terms</a>
+          <a href="#" class="footer-link" style="font-size:0.78rem;">Cookies</a>
         </div>
       </div>
     </div>
   </footer>
 
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  LOGIN MODAL                               -->
-  <!-- ══════════════════════════════════════════ -->
+  <!-- ════════════════════════════════════════
+       LOGIN MODAL
+  ════════════════════════════════════════ -->
   <div id="loginModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
     <div class="modal-box">
       <div class="modal-header">
         <button class="modal-close" onclick="toggleModal('loginModal', false)" aria-label="Close">✕</button>
-        <div style="font-size:2rem;margin-bottom:0.5rem;"></div>
         <h2 id="loginTitle">Welcome Back</h2>
         <p>Sign in to your EmpowHer account</p>
       </div>
       <div class="modal-body">
+
         <div class="modal-field">
           <label for="login-email">Email Address</label>
           <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+          <span class="field-error" id="login-email-err">Please enter a valid email address.</span>
         </div>
+
         <div class="modal-field">
           <label for="login-password">Password</label>
           <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password"/>
+          <span class="field-error" id="login-pass-err">Password must be at least 6 characters.</span>
         </div>
+
         <div style="text-align:right;margin-bottom:0.5rem;">
           <a href="#" style="font-size:0.78rem;color:var(--rose);text-decoration:none;font-weight:600;">Forgot password?</a>
         </div>
+
+        <!-- JS Event 5 — Submit Event: validates form before submission -->
         <button class="modal-submit" onclick="handleLogin()">Sign In →</button>
+
         <div class="modal-divider">or</div>
         <div class="modal-switch">
           Don't have an account?
@@ -1485,49 +1765,56 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  REGISTER MODAL — LIST YOUR VENTURE        -->
-  <!-- ══════════════════════════════════════════ -->
-  <div id="registerModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
-    <div class="modal-box" style="max-width:620px;border-radius:12px;overflow:hidden;">
 
-      <!-- Close button (floated top-right, dark on white header) -->
+  <!-- ════════════════════════════════════════
+       REGISTER MODAL — LIST YOUR VENTURE
+       (All 5 JS Events demonstrated here)
+  ════════════════════════════════════════ -->
+  <div id="registerModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
+    <div class="modal-box" style="max-width:620px;border-radius:12px;">
+
       <button onclick="toggleModal('registerModal', false)" aria-label="Close"
         style="position:absolute;top:1rem;right:1rem;z-index:10;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.07);border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555;transition:background 0.2s;"
         onmouseover="this.style.background='rgba(0,0,0,0.14)'" onmouseout="this.style.background='rgba(0,0,0,0.07)'">✕</button>
 
-      <!-- White header (no gradient — matches screenshot) -->
-      <div style="padding:2rem 2rem 0.5rem;border-bottom:1px solid #f0ebe6;">
+      <div style="padding:2rem 2rem 1rem;border-bottom:1px solid #f0ebe6;">
         <h2 id="registerTitle" style="font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--charcoal);margin-bottom:0.3rem;">List Your Venture</h2>
-        <p style="font-size:0.88rem;color:#999;margin:0;">Join our ecosystem and get discovered by investors and mentors.</p>
+        <p style="font-size:0.85rem;color:#999;margin:0;">Join the ecosystem and get discovered by investors and mentors.</p>
+
+        <!-- JS Event 4 preview — shows selected sector dynamically -->
+        <div id="sector-preview" style="display:none;margin-top:0.8rem;padding:0.5rem 0.9rem;background:rgba(45,74,62,0.07);border-radius:4px;font-size:0.8rem;color:var(--forest);font-weight:600;"></div>
       </div>
 
-      <!-- Form body — scrollable if needed -->
-      <div class="modal-body" style="padding:1.6rem 2rem 2rem;max-height:75vh;overflow-y:auto;">
+      <div class="modal-body" style="padding:1.5rem 2rem 2rem;max-height:75vh;overflow-y:auto;">
 
-        <!-- Row 1: Founder Name + Business Email -->
+        <!-- Row 1 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
           <div class="modal-field">
-            <label for="ven-name">Founder Name</label>
+            <label for="ven-name">Founder Name *</label>
             <input type="text" id="ven-name" placeholder="e.g., Ananya Sharma"/>
+            <span class="field-error" id="ven-name-err">Founder name is required.</span>
           </div>
           <div class="modal-field">
-            <label for="ven-email">Business Email</label>
+            <label for="ven-email">Business Email *</label>
             <input type="email" id="ven-email" placeholder="founder@company.com"/>
+            <span class="field-error" id="ven-email-err">Enter a valid email address.</span>
           </div>
         </div>
 
-        <!-- Row 2: Company / Startup Name (full width) -->
+        <!-- Row 2 -->
         <div class="modal-field">
-          <label for="ven-company">Company / Startup Name</label>
+          <label for="ven-company">Company / Startup Name *</label>
           <input type="text" id="ven-company" placeholder="e.g., RupeeWise"/>
+          <span class="field-error" id="ven-company-err">Company name is required.</span>
         </div>
 
-        <!-- Row 3: Industry Sector + Location -->
+        <!-- Row 3 — JS Event 4 (Change) triggers sector display -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
           <div class="modal-field">
-            <label for="ven-industry">Industry Sector</label>
-            <select id="ven-industry">
+            <label for="ven-industry">Industry Sector *</label>
+            <!-- JS EVENT 4 — Change Event -->
+            <select id="ven-industry" onchange="handleIndustrySectorChange(this)">
+              <option value="">Choose sector…</option>
               <option>E-Commerce</option>
               <option>EdTech</option>
               <option>HealthTech</option>
@@ -1535,17 +1822,19 @@
               <option>Consumer Goods</option>
               <option>CleanTech</option>
               <option>Retail & Beauty</option>
-              <option>Digital Payments</option>
+              <option>BioTech</option>
               <option>Other</option>
             </select>
+            <span class="field-error" id="ven-industry-err">Please select a sector.</span>
           </div>
           <div class="modal-field">
-            <label for="ven-city">Location (City)</label>
+            <label for="ven-city">Location (City) *</label>
             <input type="text" id="ven-city" placeholder="e.g., Bengaluru"/>
+            <span class="field-error" id="ven-city-err">City is required.</span>
           </div>
         </div>
 
-        <!-- Row 4: Funding Stage + Website (optional) -->
+        <!-- Row 4 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
           <div class="modal-field">
             <label for="ven-stage">Funding Stage</label>
@@ -1560,24 +1849,30 @@
             </select>
           </div>
           <div class="modal-field">
-            <label for="ven-website">Website <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#bbb;">(optional)</span></label>
+            <label for="ven-website">Website <span style="font-weight:400;font-size:0.7rem;color:#bbb;">(optional)</span></label>
             <input type="url" id="ven-website" placeholder="https://yourcompany.com"/>
           </div>
         </div>
 
-        <!-- Row 5: Brief Business Description (full width textarea) -->
+        <!-- Row 5 — JS Event 1 (Input): live character count -->
         <div class="modal-field">
-          <label for="ven-desc">Brief Business Description</label>
-          <textarea id="ven-desc" placeholder="What problem does your business solve?" rows="4"
-            style="width:100%;padding:0.65rem 0.9rem;border:1.5px solid #e5e0db;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);background:var(--cream);transition:border-color 0.2s;outline:none;resize:vertical;line-height:1.55;"
-            onfocus="this.style.borderColor='#c9756c';this.style.background='#fff';"
-            onblur="this.style.borderColor='#e5e0db';this.style.background='var(--cream)';"></textarea>
+          <label for="ven-desc">
+            Business Description *
+            <span style="font-weight:400;font-size:0.7rem;color:#bbb;text-transform:none;letter-spacing:0;margin-left:4px;">(What problem do you solve?)</span>
+          </label>
+          <!-- JS EVENT 1 — Input Event: live character counter -->
+          <textarea id="ven-desc" placeholder="Describe the problem you solve and how your business addresses it…" rows="4"
+            style="width:100%;padding:0.65rem 0.9rem;border:1.5px solid #e5e0db;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--charcoal);background:var(--cream);outline:none;resize:vertical;line-height:1.55;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;"
+            oninput="updateCharCount(this,'ven-desc-count',280)"
+            maxlength="300"></textarea>
+          <div class="char-count-wrap">
+            <span class="char-count" id="ven-desc-count">0 / 280 characters</span>
+          </div>
+          <span class="field-error" id="ven-desc-err">Description must be at least 30 characters.</span>
         </div>
 
-        <!-- Submit -->
-        <button class="modal-submit" onclick="handleRegister()" style="margin-top:0.25rem;">
-          Submit & Get Listed →
-        </button>
+        <!-- JS Event 5 — Submit: full validation with inline errors -->
+        <button class="modal-submit" onclick="handleRegister()">Submit & Get Listed →</button>
 
         <div class="modal-switch" style="margin-top:1rem;">
           Already a member?
@@ -1587,17 +1882,263 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════ -->
-  <!--  SCRIPTS                                   -->
-  <!-- ══════════════════════════════════════════ -->
+  <!-- Toast -->
+  <div id="api-toast" class="api-toast" role="status" aria-live="polite">
+    <span class="toast-icon" id="toast-icon">✓</span>
+    <span id="toast-msg"></span>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       JAVASCRIPT — All 5 Events + Utilities
+  ════════════════════════════════════════ -->
   <script>
-    // ── Modal toggle (fixed: no navbar overlap, smooth fade) ──
+
+    // ════════════════════════════════════════
+    // ★ JS EVENT 1 — INPUT EVENT
+    //   Displays live character count while typing
+    //   in the business description textarea.
+    // ════════════════════════════════════════
+    function updateCharCount(textarea, counterId, max) {
+      const len = textarea.value.length;
+      const counter = document.getElementById(counterId);
+      if (!counter) return;
+
+      counter.textContent = `${len} / ${max} characters`;
+      counter.className = 'char-count';
+
+      if (len >= max * 0.9) counter.classList.add('over');
+      else if (len >= max * 0.75) counter.classList.add('warning');
+
+      // Clear error state while typing
+      if (len >= 30) {
+        textarea.classList.remove('error');
+        const errEl = textarea.parentElement.querySelector('.field-error');
+        if (errEl) errEl.classList.remove('visible');
+      }
+    }
+
+
+    // ════════════════════════════════════════
+    // ★ JS EVENT 2 — FOCUS EVENT
+    //   Highlights form fields with a glowing
+    //   border when the user focuses them.
+    //   Applied to ALL modal inputs/selects/textareas.
+    // ════════════════════════════════════════
+    function attachFocusEvents() {
+      document.querySelectorAll('.modal-field input, .modal-field select, .modal-field textarea').forEach(el => {
+
+        el.addEventListener('focus', function() {
+          // Remove any existing focused class from siblings in same modal
+          this.classList.add('focused');
+          // Clear error state on refocus
+          this.classList.remove('error');
+          const errEl = this.parentElement.querySelector('.field-error');
+          if (errEl) errEl.classList.remove('visible');
+        });
+
+        el.addEventListener('blur', function() {
+          this.classList.remove('focused');
+        });
+      });
+    }
+    attachFocusEvents();
+
+
+    // ════════════════════════════════════════
+    // ★ JS EVENT 3 — MOUSEOVER EVENT
+    //   Changes card appearance on hover:
+    //   applies a subtle 3D tilt transform and
+    //   pops the accent bar color.
+    // ════════════════════════════════════════
+    document.querySelectorAll('.biz-card').forEach(card => {
+
+      card.addEventListener('mouseover', function(e) {
+        // 3D tilt based on cursor position within card
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateY = ((x - centerX) / centerX) * 5;
+        const rotateX = -((y - centerY) / centerY) * 4;
+
+        this.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+        this.style.transition = 'transform 0.1s ease';
+      });
+
+      card.addEventListener('mousemove', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateY = ((x - centerX) / centerX) * 5;
+        const rotateX = -((y - centerY) / centerY) * 4;
+
+        this.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+      });
+
+      card.addEventListener('mouseout', function() {
+        this.style.transform = '';
+        this.style.transition = 'transform 0.4s ease, box-shadow 0.3s ease';
+      });
+    });
+
+
+    // ════════════════════════════════════════
+    // ★ JS EVENT 4 — CHANGE EVENT
+    //   (a) Directory filter: dynamically updates
+    //       "Showing X founders in [sector]" label.
+    //   (b) Register modal: shows sector context
+    //       tag when a sector is selected.
+    // ════════════════════════════════════════
+
+    // (a) Directory sector filter
+    function handleSectorChange(select) {
+      const sector = select.value;
+      const stageFilter = document.getElementById('stage-filter').value;
+      applyDirectoryFilters(sector, stageFilter);
+    }
+
+    function handleStageChange(select) {
+      const stage = select.value;
+      const sectorFilter = document.getElementById('sector-filter').value;
+      applyDirectoryFilters(sectorFilter, stage);
+    }
+
+    function applyDirectoryFilters(sector, stage) {
+      const cards = document.querySelectorAll('#businesses-grid .biz-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const cardSector = card.dataset.sector || '';
+        const cardStage  = card.dataset.stage  || '';
+
+        const sectorMatch = sector === 'all' || cardSector === sector;
+        const stageMatch  = stage  === 'all' || cardStage  === stage;
+
+        if (sectorMatch && stageMatch) {
+          card.classList.remove('filtered-out');
+          visibleCount++;
+        } else {
+          card.classList.add('filtered-out');
+        }
+      });
+
+      // Update dynamic result label
+      const tag = document.getElementById('filter-result-tag');
+      const sectorLabel = sector === 'all' ? 'all sectors' : sector;
+      const stageLabel  = stage  === 'all' ? ''            : ` · ${stage}`;
+      tag.textContent = `Showing ${visibleCount} founder${visibleCount !== 1 ? 's' : ''} in ${sectorLabel}${stageLabel}`;
+      tag.classList.add('updated');
+      setTimeout(() => tag.classList.remove('updated'), 600);
+    }
+
+    // (b) Register modal sector change
+    function handleIndustrySectorChange(select) {
+      const val = select.value;
+      const preview = document.getElementById('sector-preview');
+      if (val) {
+        const sectorMentorMap = {
+          'EdTech':         'Dr. Diana Yates matches your sector — she can guide you on EdTech regulatory hurdles.',
+          'HealthTech':     'Dr. Diana Yates (HealthTech · Ex-FDA) is available to mentor in this sector.',
+          'FinTech':        'Jessica Park (VC · Sequoia) has backed 3 FinTech founders this year.',
+          'CleanTech':      'Priya Nair (Ex-Google) scaled a CleanTech B2C product to 2M users.',
+          'E-Commerce':     'Priya Nair specialises in E-Commerce growth across Asia-Pacific.',
+          'BioTech':        'Dr. Diana Yates (Ex-FDA) directly mentors BioTech regulatory strategy.',
+          'Consumer Goods': 'Fatima Al-Hassan bootstrapped two consumer-goods companies to 10M+ ARR.',
+          'Retail & Beauty':'Fatima Al-Hassan grew two retail brands in MENA markets — great mentor fit.',
+          'Other':          '340+ mentors on the platform — we\'ll match you based on your goals.',
+        };
+        preview.textContent = `🎯 Sector: ${val} — ${sectorMentorMap[val] || 'A mentor match will be suggested after listing.'}`;
+        preview.style.display = 'block';
+        // animate in
+        preview.style.opacity = '0';
+        preview.style.transform = 'translateY(6px)';
+        preview.style.transition = 'opacity 0.3s, transform 0.3s';
+        requestAnimationFrame(() => {
+          preview.style.opacity = '1';
+          preview.style.transform = 'translateY(0)';
+        });
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+
+
+    // ════════════════════════════════════════
+    // ★ JS EVENT 5 — SUBMIT EVENT
+    //   Validates the form before submission,
+    //   shows inline field-level error messages
+    //   (no alert()). Only submits when all
+    //   required fields pass.
+    // ════════════════════════════════════════
+    function validateField(id, errId, validator, errMsg) {
+      const el = document.getElementById(id);
+      const errEl = document.getElementById(errId);
+      const value = el.value.trim();
+      const valid = validator(value);
+
+      if (!valid) {
+        el.classList.add('error');
+        errEl.textContent = errMsg;
+        errEl.classList.add('visible');
+      } else {
+        el.classList.remove('error');
+        errEl.classList.remove('visible');
+      }
+      return valid;
+    }
+
+    function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+    function notEmpty(v) { return v.length > 0; }
+    function minLen(n) { return v => v.length >= n; }
+
+    function handleRegister() {
+      // Run all validations
+      const v1  = validateField('ven-name',     'ven-name-err',     notEmpty,     'Founder name is required.');
+      const v2  = validateField('ven-email',    'ven-email-err',    isEmail,      'Enter a valid email address.');
+      const v3  = validateField('ven-company',  'ven-company-err',  notEmpty,     'Company name is required.');
+      const v4  = validateField('ven-industry', 'ven-industry-err', notEmpty,     'Please select an industry sector.');
+      const v5  = validateField('ven-city',     'ven-city-err',     notEmpty,     'Please enter your city.');
+      const v6  = validateField('ven-desc',     'ven-desc-err',     minLen(30),   'Description must be at least 30 characters.');
+
+      if (!(v1 && v2 && v3 && v4 && v5 && v6)) {
+        // Scroll first error into view
+        const firstErr = document.querySelector('#registerModal .modal-field input.error, #registerModal .modal-field select.error, #registerModal .modal-field textarea.error');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      // All valid — simulate submission
+      const name    = document.getElementById('ven-name').value.trim();
+      const company = document.getElementById('ven-company').value.trim();
+      toggleModal('registerModal', false);
+      showToast('✓', `Welcome, ${name}! "${company}" has been submitted for listing.`);
+    }
+
+    function handleLogin() {
+      const v1 = validateField('login-email',    'login-email-err', isEmail,  'Please enter a valid email address.');
+      const v2 = validateField('login-password', 'login-pass-err',  minLen(6),'Password must be at least 6 characters.');
+      if (!(v1 && v2)) return;
+
+      const email = document.getElementById('login-email').value.trim();
+      toggleModal('loginModal', false);
+      showToast('✓', `Signed in as ${email}`);
+    }
+
+
+    // ════════════════════════════════════════
+    // MODAL UTILITIES
+    // ════════════════════════════════════════
     function toggleModal(modalId, show) {
       const modal = document.getElementById(modalId);
       if (show) {
-        modal.classList.remove('hidden');
-        modal.classList.remove('fading');
-        document.body.style.overflow = 'hidden'; // prevent background scroll
+        modal.classList.remove('hidden', 'fading');
+        document.body.style.overflow = 'hidden';
+        // re-attach focus events for any newly rendered fields
+        attachFocusEvents();
       } else {
         modal.classList.add('fading');
         setTimeout(() => {
@@ -1608,428 +2149,301 @@
       }
     }
 
-    // Close modal when clicking the backdrop
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', e => {
       ['loginModal', 'registerModal'].forEach(id => {
-        const modal = document.getElementById(id);
-        if (e.target === modal) toggleModal(id, false);
+        if (e.target === document.getElementById(id)) toggleModal(id, false);
       });
     });
-
-    // Close modals on Escape key
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        ['loginModal', 'registerModal'].forEach(id => {
-          if (!document.getElementById(id).classList.contains('hidden')) {
-            toggleModal(id, false);
-          }
+        ['loginModal','registerModal'].forEach(id => {
+          if (!document.getElementById(id).classList.contains('hidden')) toggleModal(id, false);
         });
       }
     });
 
-    // ── Form handlers (demo alerts) ──
-    function handleLogin() {
-      const email = document.getElementById('login-email').value.trim();
-      const pass  = document.getElementById('login-password').value.trim();
-      if (!email || !pass) {
-        alert('Please fill in both email and password.');
-        return;
+
+    // ════════════════════════════════════════
+    // TOAST NOTIFICATIONS
+    // ════════════════════════════════════════
+    function showToast(icon, message) {
+      const toast = document.getElementById('api-toast');
+      document.getElementById('toast-icon').textContent = icon;
+      document.getElementById('toast-msg').textContent  = message;
+      toast.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+
+    // ════════════════════════════════════════
+    // ANIMATED STAT COUNTERS (Hero + Problem)
+    // ════════════════════════════════════════
+    function animateCounter(el) {
+      const target = parseInt(el.dataset.target || el.dataset.counter, 10);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1600;
+      const start = performance.now();
+
+      function step(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease out cubic
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * target);
+        el.textContent = current + suffix;
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = target + suffix;
       }
-      alert(`Welcome back! Signing in as ${email}`);
-      toggleModal('loginModal', false);
+      requestAnimationFrame(step);
     }
 
-    function handleRegister() {
-      const name    = document.getElementById('ven-name').value.trim();
-      const email   = document.getElementById('ven-email').value.trim();
-      const company = document.getElementById('ven-company').value.trim();
-      const desc    = document.getElementById('ven-desc').value.trim();
-      if (!name || !email || !company || !desc) {
-        alert('Please fill in all required fields (Name, Email, Company, and Description).');
-        return;
-      }
-      alert(`🎉 Welcome to EmpowHer, ${name}! "${company}" has been submitted for listing. We'll review and publish it shortly.`);
-      toggleModal('registerModal', false);
-    }
-
-    // ── Mobile menu toggle ──
-    function toggleMenu() {
-      document.getElementById('mobile-menu').classList.toggle('open');
-    }
-
-    document.querySelectorAll('#mobile-menu a').forEach(link => {
-      link.addEventListener('click', () => {
-        document.getElementById('mobile-menu').classList.remove('open');
-      });
-    });
-
-    // ── Sticky nav shadow on scroll ──
-    const nav = document.querySelector('nav');
-    window.addEventListener('scroll', () => {
-      nav.style.boxShadow = window.scrollY > 20
-        ? '0 4px 24px rgba(0,0,0,0.07)'
-        : 'none';
-    });
-
-    // ── Scroll-triggered fade-in for cards ──
-    const observer = new IntersectionObserver((entries) => {
+    const counterObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
+        if (entry.isIntersecting && !entry.target.dataset.animated) {
+          entry.target.dataset.animated = '1';
+          animateCounter(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-target],[data-counter]').forEach(el => {
+      counterObserver.observe(el);
+    });
+
+
+    // ════════════════════════════════════════
+    // SCROLL REVEAL
+    // ════════════════════════════════════════
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-          observer.unobserve(entry.target);
+          entry.target.style.transitionDelay = `${i * 0.05}s`;
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.1 });
 
-    document.querySelectorAll('.biz-card, .mentor-card, article').forEach((el, i) => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(24px)';
-      el.style.transition = `opacity 0.55s ease ${i * 0.06}s, transform 0.55s ease ${i * 0.06}s`;
-      observer.observe(el);
-    });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-  // Helper Function: Calculates straight-line distance (Haversine formula approximation)
-  function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radius of the Earth in km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c; // Distance in km
-  }
 
-    // ── Smooth scroll for anchor links ──
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        const href = this.getAttribute('href');
-        if (!href || href === '#') return;
-        const target = document.querySelector(href);
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    });
-
-    // ══════════════════════════════════════════
-    //  FAVORITES — Local Storage API
-    //  Saves bookmarked ventures so they persist
-    //  across browser sessions.
-    // ══════════════════════════════════════════
-    const FAV_STORAGE_KEY = 'empowher_favorite_ventures';
-
-    function getFavoriteIds() {
-      try {
-        const stored = localStorage.getItem(FAV_STORAGE_KEY);
-        return stored ? JSON.parse(stored) : [];
-      } catch (e) {
-        console.error('Could not read favorites from local storage:', e);
-        return [];
-      }
-    }
-
-    function saveFavoriteIds(ids) {
-      try {
-        localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify(ids));
-      } catch (e) {
-        console.error('Could not save favorites to local storage:', e);
-      }
-    }
+    // ════════════════════════════════════════
+    // FAVORITES (localStorage)
+    // ════════════════════════════════════════
+    const FAV_KEY = 'empowher_favorite_ventures';
+    function getFavs() { try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch { return []; } }
+    function saveFavs(ids) { try { localStorage.setItem(FAV_KEY, JSON.stringify(ids)); } catch {} }
 
     function toggleFavorite(btn) {
       const id = btn.dataset.id;
-      let favs = getFavoriteIds();
-
+      let favs = getFavs();
       if (favs.includes(id)) {
         favs = favs.filter(f => f !== id);
         btn.classList.remove('active');
         btn.textContent = '☆';
+        showToast('☆', 'Removed from saved ventures.');
       } else {
         favs.push(id);
         btn.classList.add('active');
         btn.textContent = '★';
+        showToast('★', 'Venture saved to your list!');
       }
-
-      saveFavoriteIds(favs);
-
-      // If the favorites-only filter is currently active, re-apply it
-      if (showingFavoritesOnly) {
-        applyFavoritesFilter();
-      }
+      saveFavs(favs);
+      if (showingFavsOnly) applyFavsFilter();
     }
 
-    // Restore saved favorite state on page load
-    function restoreFavoritesUI() {
-      const favs = getFavoriteIds();
+    (function restoreFavUI() {
+      const favs = getFavs();
       document.querySelectorAll('#businesses-grid .fav-btn').forEach(btn => {
         if (favs.includes(btn.dataset.id)) {
           btn.classList.add('active');
           btn.textContent = '★';
         }
       });
-    }
-    restoreFavoritesUI();
+    })();
 
-    // ── "My Favorites" filter toggle ──
-    let showingFavoritesOnly = false;
-
-    function applyFavoritesFilter() {
-      const favs = getFavoriteIds();
+    let showingFavsOnly = false;
+    function applyFavsFilter() {
+      const favs = getFavs();
       document.querySelectorAll('#businesses-grid .biz-card').forEach(card => {
-        const id = card.dataset.id;
-        card.style.display = (!showingFavoritesOnly || favs.includes(id)) ? '' : 'none';
+        card.style.display = (!showingFavsOnly || favs.includes(card.dataset.id)) ? '' : 'none';
       });
-      // Always keep the "List Your Business" CTA card visible
-      const cta = document.querySelector('#businesses-grid .cta-list-card');
-      if (cta) cta.style.display = '';
     }
-
     function toggleFavoritesFilter() {
-      const favs = getFavoriteIds();
+      const favs = getFavs();
       const btn = document.getElementById('fav-filter-btn');
-
-      if (!showingFavoritesOnly && favs.length === 0) {
-        alert("You haven't saved any ventures yet. Tap the ☆ icon on a business card to add it to your favorites.");
+      if (!showingFavsOnly && favs.length === 0) {
+        showToast('☆', "Tap the ☆ on a card to save ventures.");
         return;
       }
-
-      showingFavoritesOnly = !showingFavoritesOnly;
-      applyFavoritesFilter();
-
-      if (showingFavoritesOnly) {
-        btn.innerHTML = '★ Show All Ventures';
-        btn.classList.add('btn-primary');
-        btn.classList.remove('btn-outline');
-      } else {
-        btn.innerHTML = '☆ My Favorites';
-        btn.classList.add('btn-outline');
-        btn.classList.remove('btn-primary');
-      }
+      showingFavsOnly = !showingFavsOnly;
+      applyFavsFilter();
+      btn.innerHTML = showingFavsOnly ? '★ Show All' : '☆ Saved';
+      btn.className  = showingFavsOnly ? 'btn-primary' : 'btn-outline';
+      btn.style.fontSize = '0.78rem';
+      btn.style.padding  = '0.45rem 1rem';
     }
 
-    // ══════════════════════════════════════════
-    //  GEOLOCATION — Founders Near Me
-    //  Detects the user's current location and
-    //  sorts/labels business cards by proximity.
-    //  Falls back to a manual city picker if
-    //  geolocation is blocked or unavailable
-    //  (common on file:// pages or in sandboxed
-    //  previews).
-    // ══════════════════════════════════════════
+
+    // ════════════════════════════════════════
+    // GEOLOCATION — Near Me
+    // ════════════════════════════════════════
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
     function findNearMeBusinesses() {
       const btn = document.getElementById('near-me-btn');
       const fallback = document.getElementById('city-fallback');
-
       if (!navigator.geolocation) {
-        btn.innerHTML = '📍 Select your city →';
+        btn.textContent = '📍 Select city →';
         fallback.classList.remove('hidden');
         return;
       }
-
-      btn.innerHTML = '⏳ Locating you...';
-
+      btn.textContent = '⏳ Locating…';
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
-          sortBusinessesByDistance(userLat, userLng);
-          btn.innerHTML = '✨ Sorted by Nearest';
+        pos => {
+          sortByDistance(pos.coords.latitude, pos.coords.longitude);
+          btn.textContent = '✨ Sorted by Nearest';
           fallback.classList.add('hidden');
         },
-        (error) => {
-          console.error("Error fetching location:", error);
-          // Geolocation blocked, denied, timed out, or unavailable —
-          // offer the manual city picker instead.
-          btn.innerHTML = '📍 Select your city →';
+        () => {
+          btn.textContent = '📍 Select city →';
           fallback.classList.remove('hidden');
         },
-        { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 }
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
       );
     }
 
-    // Used by the manual "Choose your city" dropdown fallback
     function useFallbackCity() {
       const select = document.getElementById('city-fallback');
-      const value = select.value;
-      if (!value) return;
-
-      const [lat, lng] = value.split(',').map(Number);
-      sortBusinessesByDistance(lat, lng);
-
-      const btn = document.getElementById('near-me-btn');
-      btn.innerHTML = `✨ Sorted near ${select.options[select.selectedIndex].text}`;
+      if (!select.value) return;
+      const [lat, lng] = select.value.split(',').map(Number);
+      sortByDistance(lat, lng);
+      document.getElementById('near-me-btn').textContent = `✨ Near ${select.options[select.selectedIndex].text}`;
     }
 
-    function sortBusinessesByDistance(userLat, userLng) {
+    function sortByDistance(userLat, userLng) {
       const grid = document.getElementById('businesses-grid');
       const cards = Array.from(grid.querySelectorAll('.biz-card[data-lat]'));
-      const cta = grid.querySelector('.cta-list-card');
-      const NEARBY_THRESHOLD_KM = 100;
+      const cta   = grid.querySelector('.cta-list-card');
+      const NEARBY = 100;
 
       cards.forEach(card => {
-        const cardLat = parseFloat(card.dataset.lat);
-        const cardLng = parseFloat(card.dataset.lng);
-        const distance = calculateDistance(userLat, userLng, cardLat, cardLng);
-        card.dataset.calculatedDistance = distance;
-
+        const dist = calculateDistance(userLat, userLng, parseFloat(card.dataset.lat), parseFloat(card.dataset.lng));
+        card.dataset.dist = dist;
         const tag = card.querySelector('.distance-tag');
         if (tag) {
-          if (distance <= NEARBY_THRESHOLD_KM) {
-            tag.textContent = `📍 Near you · ~${distance.toFixed(0)} km away`;
-            tag.style.color = 'var(--forest)';
-          } else {
-            tag.textContent = `📍 ~${distance.toFixed(0)} km away from you`;
-            tag.style.color = 'var(--rose)';
-          }
+          tag.textContent = dist <= NEARBY
+            ? `📍 Near you · ~${dist.toFixed(0)} km`
+            : `📍 ~${dist.toFixed(0)} km away`;
+          tag.style.color = dist <= NEARBY ? 'var(--forest)' : 'var(--rose)';
           tag.classList.remove('hidden');
         }
       });
 
-      cards.sort((a, b) => parseFloat(a.dataset.calculatedDistance) - parseFloat(b.dataset.calculatedDistance));
-
-      cards.forEach(card => grid.appendChild(card));
-      // Keep the "List Your Business" CTA card pinned at the end
+      cards.sort((a, b) => parseFloat(a.dataset.dist) - parseFloat(b.dataset.dist));
+      cards.forEach(c => grid.appendChild(c));
       if (cta) grid.appendChild(cta);
     }
-    // === Web Notifications API: simulated live mentorship alert ===
-    function requestKiranMentorship(event) {
+
+
+    // ════════════════════════════════════════
+    // MENTORSHIP REQUEST (Web Notifications)
+    // ════════════════════════════════════════
+    function requestMentorship(event, name) {
       if (event) event.preventDefault();
-      const message = 'EmpowHer: Your mentorship request has been sent successfully!';
-
-      if (!('Notification' in window)) {
-        showApiToast(message);
-        return;
+      const msg = `EmpowHer: Mentorship request sent to ${name}!`;
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(msg);
+      } else if ('Notification' in window && Notification.permission !== 'denied') {
+        Notification.requestPermission().then(p => { if (p === 'granted') new Notification(msg); });
       }
-
-      if (Notification.permission === 'granted') {
-        new Notification(message);
-        showApiToast('Mentorship request sent. Browser notification triggered.');
-        return;
-      }
-
-      if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') new Notification(message);
-          showApiToast(message);
-        });
-        return;
-      }
-
-      showApiToast(message);
+      showToast('🤝', `Request sent to ${name}. You'll hear back within 48 hrs.`);
     }
 
-    // === Web Speech API: hands-free directory search ===
+
+    // ════════════════════════════════════════
+    // VOICE SEARCH (Web Speech API)
+    // ════════════════════════════════════════
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
 
     function startVoiceSearch() {
       const micBtn = document.getElementById('voice-search-btn');
-      const searchInput = document.getElementById('voice-search-input');
-
+      const input  = document.getElementById('voice-search-input');
       if (!SpeechRecognition) {
-        showApiToast('Voice search is not supported in this browser. Try Chrome or Edge.');
+        showToast('🎤', 'Voice search needs Chrome or Edge.');
         return;
       }
-
       if (!recognition) {
         recognition = new SpeechRecognition();
         recognition.lang = 'en-IN';
         recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
       }
-
       micBtn.classList.add('listening');
-      micBtn.textContent = '...';
-      showApiToast('Listening for a founder, city, or industry...');
+      micBtn.textContent = '…';
+      showToast('🎤', 'Listening… say a city, sector, or founder name.');
 
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.trim();
-        searchInput.value = transcript;
-        filterBusinesses(transcript);
-        showApiToast(`Searching directory for "${transcript}"`);
-      };
-
-      recognition.onerror = () => {
-        showApiToast('Voice search could not hear that clearly. Please try again.');
-      };
-
-      recognition.onend = () => {
-        micBtn.classList.remove('listening');
-        micBtn.textContent = 'Mic';
-      };
-
+      recognition.onresult  = e => { const t = e.results[0][0].transcript.trim(); input.value = t; filterBySearch(t); showToast('🔍', `Searching for "${t}"`); };
+      recognition.onerror   = () => showToast('🎤', 'Could not hear clearly. Try again.');
+      recognition.onend     = () => { micBtn.classList.remove('listening'); micBtn.textContent = 'MIC'; };
       recognition.start();
     }
 
-    function filterBusinesses(query) {
-      const normalizedQuery = query.trim().toLowerCase();
+    function filterBySearch(query) {
+      const q = query.trim().toLowerCase();
       document.querySelectorAll('#businesses-grid .biz-card').forEach(card => {
-        const matches = !normalizedQuery || card.innerText.toLowerCase().includes(normalizedQuery);
-        card.classList.toggle('voice-hidden', !matches);
+        card.classList.toggle('voice-hidden', !!q && !card.innerText.toLowerCase().includes(q));
       });
     }
 
-    // === Clipboard API: instant profile sharing from Connect links ===
-    async function copyBusinessProfile(card) {
-      const founder = card.querySelector('h3')?.innerText.trim() || 'EmpowHer founder';
-      const companyLine = card.querySelector('p')?.innerText.trim() || 'EmpowHer Network';
-      const industry = card.querySelector('.tag')?.innerText.trim() || 'Founder';
-      const profileUrl = `${window.location.origin}${window.location.pathname}#${card.dataset.id || 'businesses'}`;
-      const profileText = `${founder} | ${companyLine} | ${industry} | ${profileUrl}`;
 
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(profileText);
-        } else {
-          copyTextFallback(profileText);
-        }
-        showApiToast('Profile link copied!');
-      } catch (error) {
-        copyTextFallback(profileText);
-        showApiToast('Profile link copied!');
-      }
-    }
-
-    function copyTextFallback(text) {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.setAttribute('readonly', '');
-      textarea.style.position = 'fixed';
-      textarea.style.left = '-9999px';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      textarea.remove();
-    }
-
-    function showApiToast(message) {
-      let toast = document.getElementById('api-toast');
-      if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'api-toast';
-        toast.className = 'api-toast';
-        toast.setAttribute('role', 'status');
-        toast.setAttribute('aria-live', 'polite');
-        document.body.appendChild(toast);
-      }
-
-      toast.textContent = message;
-      toast.classList.add('show');
-      clearTimeout(showApiToast.timer);
-      showApiToast.timer = setTimeout(() => toast.classList.remove('show'), 2800);
-    }
-
-    document.querySelectorAll('#businesses-grid .biz-card a').forEach(link => {
-      if (link.textContent.includes('Connect')) {
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          copyBusinessProfile(link.closest('.biz-card'));
-        });
-      }
+    // ════════════════════════════════════════
+    // CLIPBOARD — Copy Connect link
+    // ════════════════════════════════════════
+    document.querySelectorAll('#businesses-grid .biz-card .connect-link').forEach(link => {
+      link.addEventListener('click', async e => {
+        e.preventDefault();
+        const card  = link.closest('.biz-card');
+        const name  = card.querySelector('h3')?.innerText || 'Founder';
+        const loc   = card.querySelectorAll('p')[0]?.innerText || '';
+        const text  = `${name} | ${loc} | EmpowHer Network`;
+        try {
+          if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
+          else { const ta = document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+          showToast('📋', `Profile for ${name} copied to clipboard!`);
+        } catch { showToast('📋', 'Profile link copied!'); }
+      });
     });
+
+
+    // ════════════════════════════════════════
+    // NAV: mobile toggle + sticky shadow
+    // ════════════════════════════════════════
+    function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
+    document.querySelectorAll('#mobile-menu a').forEach(a => a.addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      document.getElementById('main-nav').style.boxShadow = window.scrollY > 24
+        ? '0 4px 24px rgba(0,0,0,0.07)' : 'none';
+    });
+
+    // ── Smooth anchor scroll ──
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (!href || href === '#') return;
+        const target = document.querySelector(href);
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+
   </script>
 </body>
 </html>
